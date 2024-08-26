@@ -1,0 +1,371 @@
+Number of iterations: 10
+how many atom share a policy (roughly): 50
+
+====================================================================
+Setup
+
+bsw07: 
+Average execution time for bsw07 setup: 0.041434 seconds
+Standard deviation of execution time: 0.000498 seconds
+Median execution time: 0.041600 seconds
+
+
+myabe: 
+Average execution time for myabe setup: 0.010532 seconds
+Standard deviation of execution time: 0.000093 seconds
+Median execution time: 0.010526 seconds
+
+
+====================================================================
+
+====================================================================
+Keygen
+
+5 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 keygen 5 attributes: 0.025796 seconds
+Standard deviation of execution time: 0.000137 seconds
+Median execution time: 0.025766 seconds
+
+
+myabe: 
+Average execution time for myabe keygen 5 attributes: 0.029930 seconds
+Standard deviation of execution time: 0.000063 seconds
+Median execution time: 0.029921 seconds
+
+
+10 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 keygen 10 attributes: 0.077731 seconds
+Standard deviation of execution time: 0.028465 seconds
+Median execution time: 0.070258 seconds
+
+
+myabe: 
+Average execution time for myabe keygen 10 attributes: 0.078379 seconds
+Standard deviation of execution time: 0.028437 seconds
+Median execution time: 0.071980 seconds
+
+
+20 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 keygen 20 attributes: 0.103540 seconds
+Standard deviation of execution time: 0.005346 seconds
+Median execution time: 0.101476 seconds
+
+
+myabe: 
+Average execution time for myabe keygen 20 attributes: 0.128467 seconds
+Standard deviation of execution time: 0.047085 seconds
+Median execution time: 0.100659 seconds
+
+
+30 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 keygen 30 attributes: 0.151705 seconds
+Standard deviation of execution time: 0.007741 seconds
+Median execution time: 0.146871 seconds
+
+
+myabe: 
+Average execution time for myabe keygen 30 attributes: 0.178180 seconds
+Standard deviation of execution time: 0.055502 seconds
+Median execution time: 0.150279 seconds
+
+
+====================================================================
+
+====================================================================
+Encryption
+
+5 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 5 atoms: 0.151322 seconds
+Standard deviation of execution time: 0.004748 seconds
+Median execution time: 0.148440 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 5 atoms: 0.165196 seconds
+Standard deviation of execution time: 0.053204 seconds
+Median execution time: 0.137183 seconds
+
+
+10 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 10 atoms: 0.249540 seconds
+Standard deviation of execution time: 0.002493 seconds
+Median execution time: 0.248810 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 10 atoms: 0.316717 seconds
+Standard deviation of execution time: 0.056390 seconds
+Median execution time: 0.288832 seconds
+
+
+30 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 30 atoms: 0.689024 seconds
+Standard deviation of execution time: 0.003680 seconds
+Median execution time: 0.687811 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 30 atoms: 0.542301 seconds
+Standard deviation of execution time: 0.001850 seconds
+Median execution time: 0.541834 seconds
+
+
+50 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 50 atoms: 1.306776 seconds
+Standard deviation of execution time: 0.114855 seconds
+Median execution time: 1.249850 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 50 atoms: 0.729781 seconds
+Standard deviation of execution time: 0.005455 seconds
+Median execution time: 0.727972 seconds
+
+
+100 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 100 atoms: 2.458105 seconds
+Standard deviation of execution time: 0.092807 seconds
+Median execution time: 2.427438 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 100 atoms: 0.858643 seconds
+Standard deviation of execution time: 0.084340 seconds
+Median execution time: 0.830338 seconds
+
+
+160 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 160 atoms: 3.672614 seconds
+Standard deviation of execution time: 0.023932 seconds
+Median execution time: 3.662233 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 160 atoms: 0.857414 seconds
+Standard deviation of execution time: 0.005710 seconds
+Median execution time: 0.855492 seconds
+
+
+320 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 320 atoms: 6.790536 seconds
+Standard deviation of execution time: 0.123901 seconds
+Median execution time: 6.748860 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 320 atoms: 0.861576 seconds
+Standard deviation of execution time: 0.016801 seconds
+Median execution time: 0.855744 seconds
+
+
+640 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 640 atoms: 13.253056 seconds
+Standard deviation of execution time: 0.108999 seconds
+Median execution time: 13.186858 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 640 atoms: 0.887924 seconds
+Standard deviation of execution time: 0.084230 seconds
+Median execution time: 0.859781 seconds
+
+
+1280 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 1280 atoms: 26.905652 seconds
+Standard deviation of execution time: 0.269045 seconds
+Median execution time: 26.797514 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 1280 atoms: 0.892573 seconds
+Standard deviation of execution time: 0.084457 seconds
+Median execution time: 0.864324 seconds
+
+
+1500 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 encrytpion 1500 atoms: 31.552992 seconds
+Standard deviation of execution time: 0.199178 seconds
+Median execution time: 31.470533 seconds
+
+
+myabe: 
+Average execution time for myabe encryption 1500 atoms: 0.871881 seconds
+Standard deviation of execution time: 0.016854 seconds
+Median execution time: 0.866368 seconds
+
+
+====================================================================
+
+====================================================================
+Decryption
+
+5 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 5 atoms: 0.039626 seconds
+Standard deviation of execution time: 0.002317 seconds
+Median execution time: 0.039823 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 5 atoms: 0.035808 seconds
+Standard deviation of execution time: 0.000097 seconds
+Median execution time: 0.035819 seconds
+
+
+10 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 10 atoms: 0.039665 seconds
+Standard deviation of execution time: 0.001077 seconds
+Median execution time: 0.039295 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 10 atoms: 0.070226 seconds
+Standard deviation of execution time: 0.000217 seconds
+Median execution time: 0.070216 seconds
+
+
+30 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 30 atoms: 0.098162 seconds
+Standard deviation of execution time: 0.002947 seconds
+Median execution time: 0.097221 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 30 atoms: 0.129051 seconds
+Standard deviation of execution time: 0.001769 seconds
+Median execution time: 0.128305 seconds
+
+
+50 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 50 atoms: 0.170649 seconds
+Standard deviation of execution time: 0.004676 seconds
+Median execution time: 0.169118 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 50 atoms: 0.150873 seconds
+Standard deviation of execution time: 0.000244 seconds
+Median execution time: 0.150878 seconds
+
+
+100 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 100 atoms: 0.354277 seconds
+Standard deviation of execution time: 0.010101 seconds
+Median execution time: 0.349085 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 100 atoms: 0.181611 seconds
+Standard deviation of execution time: 0.000216 seconds
+Median execution time: 0.181640 seconds
+
+
+160 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 160 atoms: 0.567469 seconds
+Standard deviation of execution time: 0.011939 seconds
+Median execution time: 0.562536 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 160 atoms: 0.187640 seconds
+Standard deviation of execution time: 0.000217 seconds
+Median execution time: 0.187663 seconds
+
+
+320 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 320 atoms: 1.108902 seconds
+Standard deviation of execution time: 0.024803 seconds
+Median execution time: 1.096368 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 320 atoms: 0.189139 seconds
+Standard deviation of execution time: 0.000384 seconds
+Median execution time: 0.189170 seconds
+
+
+640 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 640 atoms: 2.194026 seconds
+Standard deviation of execution time: 0.043844 seconds
+Median execution time: 2.176572 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 640 atoms: 0.189400 seconds
+Standard deviation of execution time: 0.000239 seconds
+Median execution time: 0.189345 seconds
+
+
+1280 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 1280 atoms: 4.378460 seconds
+Standard deviation of execution time: 0.093277 seconds
+Median execution time: 4.344427 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 1280 atoms: 0.190331 seconds
+Standard deviation of execution time: 0.000626 seconds
+Median execution time: 0.190113 seconds
+
+
+1500 attributes/atoms >>>
+
+bsw07: 
+Average execution time for bsw07 decryption 1500 atoms: 5.111895 seconds
+Standard deviation of execution time: 0.104495 seconds
+Median execution time: 5.064959 seconds
+
+
+myabe: 
+Average execution time for myabe decryption 1500 atoms: 0.190233 seconds
+Standard deviation of execution time: 0.000253 seconds
+Median execution time: 0.190196 seconds
+
+
+====================================================================
+
