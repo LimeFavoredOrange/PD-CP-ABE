@@ -6,7 +6,7 @@
 [![Charm-Crypto](https://img.shields.io/badge/Charm--Crypto-0.50-blue)](https://jhuisi.github.io/charm/)
 [![Docker](https://img.shields.io/badge/Docker-charm--crypto--ubuntu22.04-purple)](https://hub.docker.com/repository/docker/xinzhang9091/charm-crypto-ubuntu22.04/general)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
-[![codecov](https://codecov.io/github/Xinzhang-Chen/CPABE/graph/badge.svg?token=PNJU958N4D)](https://codecov.io/github/Xinzhang-Chen/CPABE)
+[![codecov](https://codecov.io/github/LimeFavoredOrange/PD-CP-ABE/graph/badge.svg?token=5BE5QNYHZ2)](https://codecov.io/github/LimeFavoredOrange/PD-CP-ABE)
 
 [<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/23135719-b685e954-bcd1-43e5-95f0-b3038725ad3f?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D23135719-b685e954-bcd1-43e5-95f0-b3038725ad3f%26entityType%3Dcollection%26workspaceId%3D1f0a1601-87f1-4963-a3f1-9194ade5e62b)
 
