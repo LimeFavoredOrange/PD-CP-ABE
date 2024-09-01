@@ -69,7 +69,7 @@ def test_read_key_from_file(abe_instance):
     key = target.keygen(mpk, msk, ["A", "B", "C"], "Alice")
     serialized_key = abe_utils.serializeKey(target.group, key)
     abe_utils.export_key_to_file(target.group, "key_test", serialized_key)
-    deserialized_key = abe_utils.read_key_from_file(target.group, "key_test.pkl")
+    deserialized_key = abe_utils.read_key_from_file(target.group, "key_test")
     assert isinstance(deserialized_key, dict)
     assert all(key in deserialized_key for key in serialized_key.keys())
     # Check the type is the same as the type of the original key
