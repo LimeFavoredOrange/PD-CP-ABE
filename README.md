@@ -66,10 +66,10 @@ docker pull xinzhang9091/charm-crypto-ubuntu22.04
 docker run -it xinzhang9091/charm-crypto-ubuntu22.04
 
 # Clone the GitHub repo
-git clone https://github.com/Xinzhang-Chen/CPABE.git
+git clone https://github.com/LimeFavoredOrange/PD-CP-ABE.git
 
 # Get into the repo and play around with it
-cd CPABE
+cd PD-CP-ABE
 ```
 
 ### 📝 Script Setup
@@ -79,7 +79,7 @@ cd CPABE
 # Assume your desktop path is <DESKTOP_PATH>, please substitute it to the corresponding value
 
 # Clone the repo
-git clone https://github.com/Xinzhang-Chen/CPABE.git
+git clone https://github.com/LimeFavoredOrange/PD-CP-ABE.git
 
 # Get into the directory
 cd CPABE/Setup/
@@ -92,7 +92,7 @@ bash install.sh
 make test
 
 # Go back to the repo and play around with it
-cd <DESKTOP_PATH>/CPABE
+cd <DESKTOP_PATH>/PD-CP-ABE
 ```
 
 The above script sets up the dependencies and environment required to run charm-crypto. It primarily includes:
