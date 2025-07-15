@@ -1132,7 +1132,7 @@ lemma non_malleability_or:
 
 
 //--------------------------------------------------------------------
-// 1. no_attribute_collision
+// 1. no_attribute_collision_diff_key
 //    Ensures that if the same user obtains AND keys for two different UIDs
 //    (uid1 != uid2) with the same attribute set, they cannot simply reuse
 //    <att1, att2>. (Two encryptor exists, but the same attribute set)
