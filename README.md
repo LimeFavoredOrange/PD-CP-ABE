@@ -471,7 +471,7 @@ To run the formal verification locally:
 3. **Execute the Tamarin Prover**
    Run the verification process:
    ```bash
-   tamarin-prover PD_CP_ABE.spthy --prove
+   tamarin-prover PD_CP_ABE.spthy --derivcheck-timeout=20 --prove
    ```
    Or if you want to use a GUI to show the proof step by step, you can run the following command instead.
    Which will run a local server on **http://127.0.0.1:3001**
