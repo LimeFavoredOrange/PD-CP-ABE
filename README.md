@@ -418,7 +418,7 @@ The [`PD_CP_ABE.spthy`](./Formal_Verification/PD_CP_ABE.spthy) file located in `
    - **Purpose**: Ensures that multiple encrypted messages are handled correctly and cannot be partially decrypted outside of the user’s access rights.  
    - **Key Lemmas**:  
      - `consistency_multi_message_output`: Confirms that decrypted messages match the original encrypted content in multi-message scenarios.  
-     - `multi_message_decryption`: Ensures users can only decrypt the parts of the multi-message encryption for which they have matching attributes.
+     - `multi_message_decryption_*`: Ensures users can only decrypt the parts of the multi-message encryption for which they have matching attributes.
 
 7. **Attribute Collision Prevention and Ciphertext Distinction**  
    - **Purpose**: Prevents key reuse attacks and attribute collision issues.  
@@ -449,7 +449,7 @@ The [`PD_CP_ABE.spthy`](./Formal_Verification/PD_CP_ABE.spthy) file located in `
 | `non_malleability`            | Prevents valid ciphertexts from being modified to decrypt to a different message.                              | Ensures the integrity of AND-policy ciphertexts.                                                |
 | `non_malleability_or`         | Same as `non_malleability` but for OR-based ciphertexts.                                                        | Ensures integrity for OR-policy ciphertexts.                                                    |
 | `unique_user_registration`    | Ensures that each `uid` is registered only once by a unique entity.                                             | Maintains unique user registration consistency.                                                 |
-| `consistent_key_generation`   | Confirms that keys for the same attributes and user remain consistent across protocol runs.                     | Prevents inconsistencies or duplications in key generation.                                     |
+| `consistent_key_generation_*`   | Confirms that keys for the same attributes and user remain consistent across protocol runs.                     | Prevents inconsistencies or duplications in key generation.                                     |
 | `only_decrypt_with_right_attributes_and` | Verifies that only users with matching AND-policy keys can decrypt the message.                        | Prevents unauthorized decryption of AND-policy ciphertexts.                                     |
 | `consistency_multi_message_output` | Ensures that the decrypted multi-message content matches the original encrypted messages.                    | Confirms the integrity of multi-message encryption.                                              |
 
