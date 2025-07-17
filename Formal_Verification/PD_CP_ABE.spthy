@@ -194,7 +194,7 @@ rule generate_attributes:
 // a single-attribute key.
 rule generate_key_or:
   [ !Broker_MasterPublicKey($Broker, MPK), !Broker_MasterSecretKey($Broker, MSK), !User($U, ~uid), !FirstAttribute($Broker, ~attr1, ~uid) ]
-  --[ GenerateKeyOr($U, $Broker, ~uid, <~attr1>), SecretKeyOR(keygen(MPK, MSK, < ~attr1 >, ~uid), ~uid) ]->
+  --[ GenerateKeyOr($U, $Broker, ~uid, <~attr1>), SecretKeyOR(keygen(MPK, MSK, < ~attr1 >, ~uid), ~uid), HasORKey(~uid) ]->
   [ 
     !User_AccessKey_OR($U, ~uid, < ~attr1 >, keygen(MPK, MSK, < ~attr1 >, ~uid))
   ]
@@ -207,7 +207,7 @@ rule generate_key_or:
 // both attributes.
 rule generate_key_and:
   [ !Broker_MasterPublicKey($Broker, MPK), !Broker_MasterSecretKey($Broker, MSK), !User($U, ~uid),  !FirstAttribute($Broker, ~attr1, ~uid), !SecondAttribute($Broker, ~attr2, ~uid) ]
-  --[ GenerateKeyAnd($U, $Broker, ~uid, <~attr1, ~attr2>), SecretKeyAND(keygen(MPK, MSK, < ~attr1, ~attr2 >, ~uid), ~uid) ]->
+  --[ GenerateKeyAnd($U, $Broker, ~uid, <~attr1, ~attr2>), SecretKeyAND(keygen(MPK, MSK, < ~attr1, ~attr2 >, ~uid), ~uid), HasANDKey(~uid) ]->
   [ 
     !User_AccessKey_AND($U, ~uid, < ~attr1, ~attr2 >, keygen(MPK, MSK, < ~attr1, ~attr2 >, ~uid))
   ]
@@ -927,48 +927,63 @@ lemma consistency_multi_message_output:
 //--------------------------------------------------------------------
 lemma multi_message_decryption_partial_orand:
   "
-  All Broker m1 m2 attr1 attr2 uid CT #enc.
+  All Broker m1 m2 attr1 attr2 uid user1 CT #enc #k #dec.
     EncryptMessageMulti_ORAND(Broker, <m1, m2>,
                               <<attr1, attr2>, <attr1, attr2>>,
                               <OR, AND>, CT, uid)@#enc
-  ==> (Ex uFirst #d1.
-      DecryptMessageMulti_First(uFirst)@#d1
-      & Decrypt(m1)@#d1)
-      & not (Ex #d2. Decrypt(m2)@#d2)
-      & not (Ex uBoth #b. DecryptMessageMulti_Both(uBoth)@#b)
+    & HasORKey(user1)@#k
+    & DecryptMessageMulti_First(user1)@#dec
+    & not (Ex #k2. HasANDKey(user1)@#k2)
+  ==> 
+    (Ex #d1. Decrypt(m1)@#d1 & #dec < #d1)
+    & not (Ex #d2. Decrypt(m2)@#d2)
+    & not (Ex #b. DecryptMessageMulti_Both(user1)@#b)
+    & #k < #enc
+    & #enc < #dec
   "
-
 
 lemma multi_message_decryption_full_orand:
   "
-  All Broker m1 m2 attr1 attr2 uid CT #enc.
+  All Broker m1 m2 attr1 attr2 uid CT #enc user1 #k #dec.
     EncryptMessageMulti_ORAND(Broker, <m1, m2>,
                               <<attr1, attr2>, <attr1, attr2>>,
                               <OR, AND>, CT, uid)@#enc
-    & (Ex uBoth #b. DecryptMessageMulti_Both(uBoth)@#b)
-  ==> (Ex #d. Decrypt(m1)@#d & Decrypt(m2)@#d)
+    & DecryptMessageMulti_Both(user1)@#dec
+    & HasANDKey(user1)@#k
+  ==> 
+    (Ex #d1 #d2. Decrypt(m1)@#d1 & Decrypt(m2)@#d2 & #k < #d1 & #k < #d2)
+  "
+  
+lemma multi_message_decryption_full_andor:
+  "
+  All Broker m1 m2 attr1 attr2 uid CT #enc user1 #k #dec.
+    EncryptMessageMulti_ANDOR(Broker, <m1, m2>, 
+                              <<attr1, attr2>, <attr1, attr2>>, 
+                              <AND, OR>, CT, uid)@#enc
+    & DecryptMessageMulti_Both(user1)@#dec
+    & HasANDKey(user1)@#k
+  ==> 
+    (Ex #d1 #d2. Decrypt(m1)@#d1 & Decrypt(m2)@#d2 & #k < #d1 & #k < #d2)
   "
 
 lemma multi_message_decryption_partial_andor:
   "
-  All Broker m1 m2 attr1 attr2 uid CT #enc.
+  All Broker m1 m2 attr1 attr2 uid user2 CT #enc #k #dec.
     EncryptMessageMulti_ANDOR(Broker, <m1, m2>,
                               <<attr1, attr2>, <attr1, attr2>>,
                               <AND, OR>, CT, uid)@#enc
-  ==> (Ex uSecond #d1.
-      DecryptMessageMulti_Second(uSecond)@#d1
-      & Decrypt(m2)@#d1)
-      & not (Ex #d2. Decrypt(m1)@#d2)
-      & not (Ex uBoth #b. DecryptMessageMulti_Both(uBoth)@#b)
+    & HasORKey(user2)@#k
+    & DecryptMessageMulti_Second(user2)@#dec
+  ==> 
+    (Ex user2 #d1 #d2.
+      DecryptMessageMulti_Second(user2)@#d1
+      & Decrypt(m2)@#d2
+      & #d1 < #d2)
+    & not (Ex #d3. Decrypt(m1)@#d3)
+    & not (Ex userBoth #b. DecryptMessageMulti_Both(userBoth)@#b)
   "
 
-lemma multi_message_decryption_full_andor:
-  "
-  All Broker m1 m2 attr1 attr2 uid CT #enc.
-    EncryptMessageMulti_ANDOR(Broker, <m1, m2>, <<attr1, attr2>, <attr1, attr2>>, <AND, OR>, CT, uid)@#enc
-    & (Ex uBoth #b. DecryptMessageMulti_Both(uBoth)@#b)
-  ==> (Ex #d. Decrypt(m1)@#d & Decrypt(m2)@#d)
-  "
+
 
 
 
