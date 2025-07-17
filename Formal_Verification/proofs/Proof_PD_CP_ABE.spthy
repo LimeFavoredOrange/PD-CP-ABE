@@ -6,54 +6,54 @@ builtins: diffie-hellman, bilinear-pairing
 functions: AND/0, OR/0, decrypt/2, decryptMulti/2, encrypt/5,
            encryptMulti/5, fst/1, keygen/4, pair/2, setup/0, snd/1
 equations:
-    decrypt(encrypt(mpk, m, <att1, att2>, AND, uid),
-            keygen(mpk, msk, <att1, att2>, uid))
+    decrypt(encrypt(mpk, m, <attr1, attr2>, AND, uid),
+            keygen(mpk, msk, <attr1, attr2>, uid))
   = m,
-    decrypt(encrypt(mpk, m, <att1, att2>, OR, uid),
-            keygen(mpk, msk, att1, uid))
+    decrypt(encrypt(mpk, m, <attr1, attr2>, OR, uid),
+            keygen(mpk, msk, attr1, uid))
   = m,
-    decrypt(encrypt(mpk, m, <att1, att2>, OR, uid),
-            keygen(mpk, msk, att2, uid))
+    decrypt(encrypt(mpk, m, <attr1, attr2>, OR, uid),
+            keygen(mpk, msk, attr2, uid))
   = m,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <AND, AND>, uid),
-                 keygen(mpk, msk, <att1, att2>, uid))
+                              <<attr1, attr2>, attr1, attr2>, <AND, AND>, uid),
+                 keygen(mpk, msk, <attr1, attr2>, uid))
   = <m1, m2>,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <AND, OR>, uid),
-                 keygen(mpk, msk, att1, uid))
+                              <<attr1, attr2>, attr1, attr2>, <AND, OR>, uid),
+                 keygen(mpk, msk, attr1, uid))
   = m2,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <AND, OR>, uid),
-                 keygen(mpk, msk, att2, uid))
+                              <<attr1, attr2>, attr1, attr2>, <AND, OR>, uid),
+                 keygen(mpk, msk, attr2, uid))
   = m2,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <AND, OR>, uid),
-                 keygen(mpk, msk, <att1, att2>, uid))
+                              <<attr1, attr2>, attr1, attr2>, <AND, OR>, uid),
+                 keygen(mpk, msk, <attr1, attr2>, uid))
   = <m1, m2>,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <OR, AND>, uid),
-                 keygen(mpk, msk, att1, uid))
+                              <<attr1, attr2>, attr1, attr2>, <OR, AND>, uid),
+                 keygen(mpk, msk, attr1, uid))
   = m1,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <OR, AND>, uid),
-                 keygen(mpk, msk, att2, uid))
+                              <<attr1, attr2>, attr1, attr2>, <OR, AND>, uid),
+                 keygen(mpk, msk, attr2, uid))
   = m1,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <OR, AND>, uid),
-                 keygen(mpk, msk, <att1, att2>, uid))
+                              <<attr1, attr2>, attr1, attr2>, <OR, AND>, uid),
+                 keygen(mpk, msk, <attr1, attr2>, uid))
   = <m1, m2>,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <OR, OR>, uid),
-                 keygen(mpk, msk, att1, uid))
+                              <<attr1, attr2>, attr1, attr2>, <OR, OR>, uid),
+                 keygen(mpk, msk, attr1, uid))
   = <m1, m2>,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <OR, OR>, uid),
-                 keygen(mpk, msk, att2, uid))
+                              <<attr1, attr2>, attr1, attr2>, <OR, OR>, uid),
+                 keygen(mpk, msk, attr2, uid))
   = <m1, m2>,
     decryptMulti(encryptMulti(mpk, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <OR, OR>, uid),
-                 keygen(mpk, msk, <att1, att2>, uid))
+                              <<attr1, attr2>, attr1, attr2>, <OR, OR>, uid),
+                 keygen(mpk, msk, <attr1, attr2>, uid))
   = <m1, m2>,
     fst(<x.1, x.2>) = x.1,
     snd(<x.1, x.2>) = x.2
@@ -132,7 +132,8 @@ rule (modulo E) generate_key_or:
    ]
   --[
   GenerateKeyOr( $U, $Broker, ~uid, ~attr1 ),
-  SecretKeyOR( keygen(MPK, MSK, ~attr1, ~uid), ~uid )
+  SecretKeyOR( keygen(MPK, MSK, ~attr1, ~uid), ~uid ),
+  HasORKey( ~uid )
   ]->
    [
    !User_AccessKey_OR( $U, ~uid, ~attr1,
@@ -151,7 +152,8 @@ rule (modulo E) generate_key_and:
    ]
   --[
   GenerateKeyAnd( $U, $Broker, ~uid, <~attr1, ~attr2> ),
-  SecretKeyAND( keygen(MPK, MSK, <~attr1, ~attr2>, ~uid), ~uid )
+  SecretKeyAND( keygen(MPK, MSK, <~attr1, ~attr2>, ~uid), ~uid ),
+  HasANDKey( ~uid )
   ]->
    [
    !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>,
@@ -318,20 +320,20 @@ rule (modulo E) decrypt_message_and:
 rule (modulo E) encrypt_message_multi:
    [
    Fr( ~m1 ), Fr( ~m2 ), !Broker_MasterPublicKey( $Broker, MPK ),
-   !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid )
+   !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
    ]
   --[
   EncryptMessageMulti( $Broker, <~m1, ~m2>,
-                       <<~att1, ~att2>, ~att1, ~att2>, <AND, AND>,
-                       encryptMulti(MPK, <~m1, ~m2>, <<~att1, ~att2>, ~att1, ~att2>,
+                       <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, AND>,
+                       encryptMulti(MPK, <~m1, ~m2>, <<~attr1, ~attr2>, ~attr1, ~attr2>,
                                     <AND, AND>, ~uid),
                        ~uid
   ),
   Secret( ~m1 ), Secret( ~m2 )
   ]->
    [
-   Out( encryptMulti(MPK, <~m1, ~m2>, <<~att1, ~att2>, ~att1, ~att2>,
-                     <AND, AND>, ~uid)
+   Out( encryptMulti(MPK, <~m1, ~m2>,
+                     <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, AND>, ~uid)
    )
    ]
 
@@ -339,18 +341,18 @@ rule (modulo E) encrypt_message_multi:
 
 rule (modulo E) decrypt_message_multi_satisfy_all:
    [
-   In( encryptMulti(MPK, <~m1, ~m2>, <<~att1, ~att2>, ~att1, ~att2>,
-                    <AND, AND>, ~uid)
+   In( encryptMulti(MPK, <~m1, ~m2>,
+                    <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, AND>, ~uid)
    ),
    !Broker_MasterPublicKey( $Broker, MPK ),
    !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>, key ),
-   !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid )
+   !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
    ]
   --[
   DecryptMessageMulti( $U ),
   Equality( <~m1, ~m2>,
             decryptMulti(encryptMulti(MPK, <~m1, ~m2>,
-                                      <<~att1, ~att2>, ~att1, ~att2>, <AND, AND>, ~uid),
+                                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, AND>, ~uid),
                          key)
   ),
   Decrypt( ~m1 ), Decrypt( ~m2 )
@@ -360,12 +362,12 @@ rule (modulo E) decrypt_message_multi_satisfy_all:
   /*
   rule (modulo AC) decrypt_message_multi_satisfy_all:
      [
-     In( encryptMulti(MPK, <~m1, ~m2>, <<~att1, ~att2>, ~att1, ~att2>,
-                      <AND, AND>, ~uid)
+     In( encryptMulti(MPK, <~m1, ~m2>,
+                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, AND>, ~uid)
      ),
      !Broker_MasterPublicKey( $Broker, MPK ),
      !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>, key ),
-     !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid )
+     !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
      ]
     --[
     DecryptMessageMulti( $U ), Equality( <~m1, ~m2>, z ),
@@ -373,97 +375,407 @@ rule (modulo E) decrypt_message_multi_satisfy_all:
     ]->
      [ ]
     variants (modulo AC)
-    1. ~att1 = ~att1.13
-       ~att2 = ~att2.13
-       ~m1   = ~m1.13
-       ~m2   = ~m2.13
-       ~uid  = ~uid.13
-       MPK   = MPK.13
-       key   = key.13
-       z     = decryptMulti(encryptMulti(MPK.13, <~m1.13, ~m2.13>,
-                                         <<~att1.13, ~att2.13>, ~att1.13, ~att2.13>, <AND, AND>,
-                                         ~uid.13),
-                            key.13)
+    1. ~attr1
+             = ~attr1.11
+       ~attr2
+             = ~attr2.11
+       ~m1   = ~m1.11
+       ~m2   = ~m2.11
+       ~uid  = ~uid.11
+       MPK   = MPK.11
+       key   = key.11
+       z     = decryptMulti(encryptMulti(MPK.11, <~m1.11, ~m2.11>,
+                                         <<~attr1.11, ~attr2.11>, ~attr1.11, ~attr2.11>, <AND, AND>,
+                                         ~uid.11),
+                            key.11)
     
-    2. ~att1 = ~x.13
-       ~att2 = ~x.14
-       ~m1   = ~m1.22
-       ~m2   = ~m2.22
-       ~uid  = ~x.19
-       MPK   = x.20
-       key   = keygen(x.20, x.21, <~x.13, ~x.14>, ~x.19)
-       z     = <~m1.22, ~m2.22>
+    2. ~attr1
+             = ~x.11
+       ~attr2
+             = ~x.12
+       ~m1   = ~m1.18
+       ~m2   = ~m2.18
+       ~uid  = ~x.15
+       MPK   = x.16
+       key   = keygen(x.16, x.17, <~x.11, ~x.12>, ~x.15)
+       z     = <~m1.18, ~m2.18>
   */
 
-rule (modulo E) decrypt_message_multi_satisfy_one:
+rule (modulo E) encrypt_message_multi_orand:
    [
-   In( encryptMulti(MPK, <~m1, ~m2>, <<~att1, ~att2>, ~att1, ~att2>,
-                    <OR, AND>, ~uid)
-   ),
-   !Broker_MasterPublicKey( $Broker, MPK ),
-   !User_AccessKey_AND( $U, ~uid, ~attr1, key ),
-   !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid )
+   Fr( ~m1 ), Fr( ~m2 ), !Broker_MasterPublicKey( $Broker, MPK ),
+   !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
    ]
   --[
-  DecryptMessageMulti( $U ),
+  EncryptMessageMulti_ORAND( $Broker, <~m1, ~m2>,
+                             <<~attr1, ~attr2>, ~attr1, ~attr2>, <OR, AND>,
+                             encryptMulti(MPK, <~m1, ~m2>, <<~attr1, ~attr2>, ~attr1, ~attr2>,
+                                          <OR, AND>, ~uid),
+                             ~uid
+  ),
+  Secret( ~m1 ), Secret( ~m2 )
+  ]->
+   [
+   Out( encryptMulti(MPK, <~m1, ~m2>,
+                     <<~attr1, ~attr2>, ~attr1, ~attr2>, <OR, AND>, ~uid)
+   )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) encrypt_message_multi_andor:
+   [
+   Fr( ~m1 ), Fr( ~m2 ), !Broker_MasterPublicKey( $Broker, MPK ),
+   !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
+   ]
+  --[
+  EncryptMessageMulti_ANDOR( $Broker, <~m1, ~m2>,
+                             <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>,
+                             encryptMulti(MPK, <~m1, ~m2>, <<~attr1, ~attr2>, ~attr1, ~attr2>,
+                                          <AND, OR>, ~uid),
+                             ~uid
+  ),
+  Secret( ~m1 ), Secret( ~m2 )
+  ]->
+   [
+   Out( encryptMulti(MPK, <~m1, ~m2>,
+                     <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid)
+   )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) decrypt_message_multi_orand_first_only:
+   [
+   In( encryptMulti(MPK, <~m1, ~m2>,
+                    <<~attr1, ~attr2>, ~attr1, ~attr2>, <OR, AND>, ~uid)
+   ),
+   !Broker_MasterPublicKey( $Broker, MPK ),
+   !User_AccessKey_OR( $U, ~uid, ~attr1, key_or ),
+   !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
+   ]
+  --[
+  DecryptMessageMulti_First( $U ),
   Equality( ~m1,
             decryptMulti(encryptMulti(MPK, <~m1, ~m2>,
-                                      <<~att1, ~att2>, ~att1, ~att2>, <OR, AND>, ~uid),
-                         key)
+                                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <OR, AND>, ~uid),
+                         key_or)
   ),
   Decrypt( ~m1 )
   ]->
    [ ]
 
   /*
-  rule (modulo AC) decrypt_message_multi_satisfy_one:
+  rule (modulo AC) decrypt_message_multi_orand_first_only:
      [
-     In( encryptMulti(MPK, <~m1, ~m2>, <<~att1, ~att2>, ~att1, ~att2>,
-                      <OR, AND>, ~uid)
+     In( encryptMulti(MPK, <~m1, ~m2>,
+                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <OR, AND>, ~uid)
      ),
      !Broker_MasterPublicKey( $Broker, MPK ),
-     !User_AccessKey_AND( $U, ~uid, ~attr1, key ),
-     !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid )
+     !User_AccessKey_OR( $U, ~uid, ~attr1, key_or ),
+     !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
      ]
-    --[ DecryptMessageMulti( $U ), Equality( ~m1, z ), Decrypt( ~m1 )
+    --[
+    DecryptMessageMulti_First( $U ), Equality( ~m1, z ), Decrypt( ~m1 )
     ]->
      [ ]
     variants (modulo AC)
-    1. ~att1 = ~att1.12
-       ~att2 = ~att2.12
-       ~m1   = ~m1.12
-       ~m2   = ~m2.12
-       ~uid  = ~uid.12
-       MPK   = MPK.12
-       key   = key.12
-       z     = decryptMulti(encryptMulti(MPK.12, <~m1.12, ~m2.12>,
-                                         <<~att1.12, ~att2.12>, ~att1.12, ~att2.12>, <OR, AND>,
-                                         ~uid.12),
-                            key.12)
+    1. ~attr1
+             = ~attr1.11
+       ~attr2
+             = ~attr2.11
+       ~m1   = ~m1.11
+       ~m2   = ~m2.11
+       ~uid  = ~uid.11
+       MPK   = MPK.11
+       key_or
+             = key_or.11
+       z     = decryptMulti(encryptMulti(MPK.11, <~m1.11, ~m2.11>,
+                                         <<~attr1.11, ~attr2.11>, ~attr1.11, ~attr2.11>, <OR, AND>,
+                                         ~uid.11),
+                            key_or.11)
     
-    2. ~att1 = ~x.12
-       ~att2 = ~x.13
-       ~m1   = ~m1.20
-       ~m2   = ~m2.20
-       ~uid  = ~x.17
-       MPK   = x.18
-       key   = keygen(x.18, x.19, <~x.12, ~x.13>, ~x.17)
-       z     = <~m1.20, ~m2.20>
+    2. ~attr1
+             = ~x.11
+       ~attr2
+             = ~x.12
+       ~m1   = ~m1.18
+       ~m2   = ~m2.18
+       ~uid  = ~x.15
+       MPK   = x.16
+       key_or
+             = keygen(x.16, x.17, <~x.11, ~x.12>, ~x.15)
+       z     = <~m1.18, ~m2.18>
     
-    3. ~att1 = ~x.12
-       ~m1   = ~m1.20
-       ~uid  = ~x.17
-       MPK   = x.18
-       key   = keygen(x.18, x.19, ~x.12, ~x.17)
-       z     = ~m1.20
+    3. ~attr1
+             = ~x.11
+       ~m1   = ~m1.18
+       ~uid  = ~x.15
+       MPK   = x.16
+       key_or
+             = keygen(x.16, x.17, ~x.11, ~x.15)
+       z     = ~m1.18
     
-    4. ~att2 = ~x.12
-       ~m1   = ~m1.19
-       ~uid  = ~x.16
-       MPK   = x.17
-       key   = keygen(x.17, x.18, ~x.12, ~x.16)
-       z     = ~m1.19
+    4. ~attr2
+             = ~x.11
+       ~m1   = ~m1.17
+       ~uid  = ~x.14
+       MPK   = x.15
+       key_or
+             = keygen(x.15, x.16, ~x.11, ~x.14)
+       z     = ~m1.17
   */
+
+rule (modulo E) decrypt_message_multi_orand_both:
+   [
+   In( encryptMulti(MPK, <~m1, ~m2>,
+                    <<~attr1, ~attr2>, ~attr1, ~attr2>, <OR, AND>, ~uid)
+   ),
+   !Broker_MasterPublicKey( $Broker, MPK ),
+   !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>, key_and ),
+   !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
+   ]
+  --[
+  DecryptMessageMulti_Both( $U ),
+  Equality( <~m1, ~m2>,
+            decryptMulti(encryptMulti(MPK, <~m1, ~m2>,
+                                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <OR, AND>, ~uid),
+                         key_and)
+  ),
+  Decrypt( ~m1 ), Decrypt( ~m2 )
+  ]->
+   [ ]
+
+  /*
+  rule (modulo AC) decrypt_message_multi_orand_both:
+     [
+     In( encryptMulti(MPK, <~m1, ~m2>,
+                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <OR, AND>, ~uid)
+     ),
+     !Broker_MasterPublicKey( $Broker, MPK ),
+     !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>, key_and ),
+     !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
+     ]
+    --[
+    DecryptMessageMulti_Both( $U ), Equality( <~m1, ~m2>, z ),
+    Decrypt( ~m1 ), Decrypt( ~m2 )
+    ]->
+     [ ]
+    variants (modulo AC)
+    1. ~attr1
+             = ~attr1.11
+       ~attr2
+             = ~attr2.11
+       ~m1   = ~m1.11
+       ~m2   = ~m2.11
+       ~uid  = ~uid.11
+       MPK   = MPK.11
+       key_and
+             = key_and.11
+       z     = decryptMulti(encryptMulti(MPK.11, <~m1.11, ~m2.11>,
+                                         <<~attr1.11, ~attr2.11>, ~attr1.11, ~attr2.11>, <OR, AND>,
+                                         ~uid.11),
+                            key_and.11)
+    
+    2. ~attr1
+             = ~x.11
+       ~attr2
+             = ~x.12
+       ~m1   = ~m1.18
+       ~m2   = ~m2.18
+       ~uid  = ~x.15
+       MPK   = x.16
+       key_and
+             = keygen(x.16, x.17, <~x.11, ~x.12>, ~x.15)
+       z     = <~m1.18, ~m2.18>
+    
+    3. ~attr1
+             = ~x.11
+       ~m1   = ~m1.18
+       ~uid  = ~x.15
+       MPK   = x.16
+       key_and
+             = keygen(x.16, x.17, ~x.11, ~x.15)
+       z     = ~m1.18
+    
+    4. ~attr2
+             = ~x.11
+       ~m1   = ~m1.17
+       ~uid  = ~x.14
+       MPK   = x.15
+       key_and
+             = keygen(x.15, x.16, ~x.11, ~x.14)
+       z     = ~m1.17
+  */
+
+rule (modulo E) decrypt_message_multi_andor_second_only:
+   [
+   In( encryptMulti(MPK, <~m1, ~m2>,
+                    <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid)
+   ),
+   !Broker_MasterPublicKey( $Broker, MPK ),
+   !User_AccessKey_OR( $U, ~uid, ~attr1, key_or ),
+   !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
+   ]
+  --[
+  DecryptMessageMulti_Second( $U ),
+  Equality( ~m2,
+            decryptMulti(encryptMulti(MPK, <~m1, ~m2>,
+                                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid),
+                         key_or)
+  ),
+  Decrypt( ~m2 )
+  ]->
+   [ ]
+
+  /*
+  rule (modulo AC) decrypt_message_multi_andor_second_only:
+     [
+     In( encryptMulti(MPK, <~m1, ~m2>,
+                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid)
+     ),
+     !Broker_MasterPublicKey( $Broker, MPK ),
+     !User_AccessKey_OR( $U, ~uid, ~attr1, key_or ),
+     !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
+     ]
+    --[
+    DecryptMessageMulti_Second( $U ), Equality( ~m2, z ),
+    Decrypt( ~m2 )
+    ]->
+     [ ]
+    variants (modulo AC)
+    1. ~attr1
+             = ~attr1.11
+       ~attr2
+             = ~attr2.11
+       ~m1   = ~m1.11
+       ~m2   = ~m2.11
+       ~uid  = ~uid.11
+       MPK   = MPK.11
+       key_or
+             = key_or.11
+       z     = decryptMulti(encryptMulti(MPK.11, <~m1.11, ~m2.11>,
+                                         <<~attr1.11, ~attr2.11>, ~attr1.11, ~attr2.11>, <AND, OR>,
+                                         ~uid.11),
+                            key_or.11)
+    
+    2. ~attr1
+             = ~x.11
+       ~attr2
+             = ~x.12
+       ~m1   = ~m1.18
+       ~m2   = ~m2.18
+       ~uid  = ~x.15
+       MPK   = x.16
+       key_or
+             = keygen(x.16, x.17, <~x.11, ~x.12>, ~x.15)
+       z     = <~m1.18, ~m2.18>
+    
+    3. ~attr1
+             = ~x.11
+       ~m2   = ~m2.18
+       ~uid  = ~x.15
+       MPK   = x.16
+       key_or
+             = keygen(x.16, x.17, ~x.11, ~x.15)
+       z     = ~m2.18
+    
+    4. ~attr2
+             = ~x.11
+       ~m2   = ~m2.17
+       ~uid  = ~x.14
+       MPK   = x.15
+       key_or
+             = keygen(x.15, x.16, ~x.11, ~x.14)
+       z     = ~m2.17
+  */
+
+rule (modulo E) decrypt_message_multi_andor_both:
+   [
+   In( encryptMulti(MPK, <~m1, ~m2>,
+                    <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid)
+   ),
+   !Broker_MasterPublicKey( $Broker, MPK ),
+   !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>, key_and ),
+   !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
+   ]
+  --[
+  DecryptMessageMulti_Both( $U ),
+  Equality( <~m1, ~m2>,
+            decryptMulti(encryptMulti(MPK, <~m1, ~m2>,
+                                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid),
+                         key_and)
+  ),
+  Decrypt( ~m1 ), Decrypt( ~m2 )
+  ]->
+   [ ]
+
+  /*
+  rule (modulo AC) decrypt_message_multi_andor_both:
+     [
+     In( encryptMulti(MPK, <~m1, ~m2>,
+                      <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid)
+     ),
+     !Broker_MasterPublicKey( $Broker, MPK ),
+     !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>, key_and ),
+     !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid )
+     ]
+    --[
+    DecryptMessageMulti_Both( $U ), Equality( <~m1, ~m2>, z ),
+    Decrypt( ~m1 ), Decrypt( ~m2 )
+    ]->
+     [ ]
+    variants (modulo AC)
+    1. ~attr1
+             = ~attr1.11
+       ~attr2
+             = ~attr2.11
+       ~m1   = ~m1.11
+       ~m2   = ~m2.11
+       ~uid  = ~uid.11
+       MPK   = MPK.11
+       key_and
+             = key_and.11
+       z     = decryptMulti(encryptMulti(MPK.11, <~m1.11, ~m2.11>,
+                                         <<~attr1.11, ~attr2.11>, ~attr1.11, ~attr2.11>, <AND, OR>,
+                                         ~uid.11),
+                            key_and.11)
+    
+    2. ~attr1
+             = ~x.11
+       ~attr2
+             = ~x.12
+       ~m1   = ~m1.18
+       ~m2   = ~m2.18
+       ~uid  = ~x.15
+       MPK   = x.16
+       key_and
+             = keygen(x.16, x.17, <~x.11, ~x.12>, ~x.15)
+       z     = <~m1.18, ~m2.18>
+    
+    3. ~attr1
+             = ~x.11
+       ~m2   = ~m2.18
+       ~uid  = ~x.15
+       MPK   = x.16
+       key_and
+             = keygen(x.16, x.17, ~x.11, ~x.15)
+       z     = ~m2.18
+    
+    4. ~attr2
+             = ~x.11
+       ~m2   = ~m2.17
+       ~uid  = ~x.14
+       MPK   = x.15
+       key_and
+             = keygen(x.15, x.16, ~x.11, ~x.14)
+       z     = ~m2.17
+  */
+
+rule (modulo E) attacker_claims_equality:
+   [ In( ~ct1 ), In( ~ct2 ) ] --[ Equality( ~ct1, ~ct2 ) ]-> [ ]
+
+  /* has exactly the trivial AC variant */
 
 lemma executable_system_setup:
   exists-trace "∃ Broker #i. Broker_Setup( Broker ) @ #i"
@@ -707,36 +1019,215 @@ solve( !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>,
   qed
 qed
 
+lemma executable_encrypt_message_multi_orand:
+  exists-trace
+  "∃ Broker m1 m2 attr1 attr2 CT uid #i.
+    EncryptMessageMulti_ORAND( Broker, <m1, m2>,
+                               <<attr1, attr2>, attr1, attr2>, <OR, AND>, CT, uid
+    ) @ #i"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ Broker m1 m2 attr1 attr2 CT uid #i.
+  (EncryptMessageMulti_ORAND( Broker, <m1, m2>,
+                              <<attr1, attr2>, attr1, attr2>, <OR, AND>, CT, uid
+   ) @ #i)"
+*/
+simplify
+solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
+  case system_setup
+  solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+         ) ▶₃ #i )
+    case create_access_policy
+    SOLVED // trace found
+  qed
+qed
+
+lemma executable_encrypt_message_multi_andor:
+  exists-trace
+  "∃ Broker m1 m2 attr1 attr2 CT uid #i.
+    EncryptMessageMulti_ANDOR( Broker, <m1, m2>,
+                               <<attr1, attr2>, attr1, attr2>, <AND, OR>, CT, uid
+    ) @ #i"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ Broker m1 m2 attr1 attr2 CT uid #i.
+  (EncryptMessageMulti_ANDOR( Broker, <m1, m2>,
+                              <<attr1, attr2>, attr1, attr2>, <AND, OR>, CT, uid
+   ) @ #i)"
+*/
+simplify
+solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
+  case system_setup
+  solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+         ) ▶₃ #i )
+    case create_access_policy
+    SOLVED // trace found
+  qed
+qed
+
+lemma executable_decrypt_message_multi_orand_first_only:
+  exists-trace "∃ User #i. DecryptMessageMulti_First( User ) @ #i"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ User #i. (DecryptMessageMulti_First( User ) @ #i)"
+*/
+simplify
+solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₁ #i )
+  case system_setup
+  solve( !User_AccessKey_OR( $U, ~uid, ~attr1,
+                             keygen(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, em('g', 'g')^~alpha>,
+                                    x, ~x.1, ~uid)
+         ) ▶₂ #i )
+    case generate_key_or
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #i )
+      case create_access_policy
+      solve( !KU( encryptMulti(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, 
+                                em('g', 'g')^~alpha>,
+                               <~m1, ~m2>, <<~attr1, ~attr2>, ~attr1, ~attr2>, <OR, AND>, ~uid)
+             ) @ #vk )
+        case encrypt_message_multi_orand
+        SOLVED // trace found
+      qed
+    qed
+  qed
+qed
+
+lemma executable_decrypt_message_multi_orand_both:
+  exists-trace "∃ User #i. DecryptMessageMulti_Both( User ) @ #i"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ User #i. (DecryptMessageMulti_Both( User ) @ #i)"
+*/
+simplify
+solve( DecryptMessageMulti_Both( User ) @ #i )
+  case decrypt_message_multi_andor_both
+  solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₁ #i )
+    case system_setup
+    solve( !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>,
+                                keygen(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, em('g', 'g')^~alpha>,
+                                       x, <~attr1, ~attr2>, ~uid)
+           ) ▶₂ #i )
+      case generate_key_and
+      solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+             ) ▶₃ #i )
+        case create_access_policy
+        solve( !KU( encryptMulti(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, 
+                                  em('g', 'g')^~alpha>,
+                                 <~m1, ~m2>, <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid)
+               ) @ #vk )
+          case encrypt_message_multi_andor
+          SOLVED // trace found
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma executable_decrypt_message_multi_andor_second_only:
+  exists-trace "∃ User #i. DecryptMessageMulti_Second( User ) @ #i"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ User #i. (DecryptMessageMulti_Second( User ) @ #i)"
+*/
+simplify
+solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₁ #i )
+  case system_setup
+  solve( !User_AccessKey_OR( $U, ~uid, ~attr1,
+                             keygen(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, em('g', 'g')^~alpha>,
+                                    x, ~x.1, ~uid)
+         ) ▶₂ #i )
+    case generate_key_or
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #i )
+      case create_access_policy
+      solve( !KU( encryptMulti(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, 
+                                em('g', 'g')^~alpha>,
+                               <~m1, ~m2>, <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid)
+             ) @ #vk )
+        case encrypt_message_multi_andor
+        SOLVED // trace found
+      qed
+    qed
+  qed
+qed
+
+lemma executable_decrypt_message_multi_andor_both:
+  exists-trace "∃ User #i. DecryptMessageMulti_Both( User ) @ #i"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ User #i. (DecryptMessageMulti_Both( User ) @ #i)"
+*/
+simplify
+solve( DecryptMessageMulti_Both( User ) @ #i )
+  case decrypt_message_multi_andor_both
+  solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₁ #i )
+    case system_setup
+    solve( !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>,
+                                keygen(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, em('g', 'g')^~alpha>,
+                                       x, <~attr1, ~attr2>, ~uid)
+           ) ▶₂ #i )
+      case generate_key_and
+      solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+             ) ▶₃ #i )
+        case create_access_policy
+        solve( !KU( encryptMulti(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, 
+                                  em('g', 'g')^~alpha>,
+                                 <~m1, ~m2>, <<~attr1, ~attr2>, ~attr1, ~attr2>, <AND, OR>, ~uid)
+               ) @ #vk )
+          case encrypt_message_multi_andor
+          SOLVED // trace found
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma executable_attacker_equality:
+  exists-trace "∃ ct1 ct2 #i. Equality( ct1, ct2 ) @ #i"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ ct1 ct2 #i. (Equality( ct1, ct2 ) @ #i)"
+*/
+simplify
+solve( Equality( ct1, ct1 ) @ #i )
+  case attacker_claims_equality
+  solve( !KU( ~ct1 ) @ #vk )
+    case fresh
+    SOLVED // trace found
+  qed
+qed
+
 lemma executable_broker:
   exists-trace
-  "∃ Broker m1 m2 att1 att2 CT CT2 u uid #i #j #k #p #q #g #t #v #y
+  "∃ Broker m1 m2 attr1 attr2 CT CT2 u uid #i #j #k #p #q #g #t #v #y
      #x #z.
     ((((((((((Broker_Setup( Broker ) @ #i) ∧
              (RevealMSK( Broker ) @ #j)) ∧
-            (Generate_FirstAttribute( Broker, att1, uid ) @ #k)) ∧
-           (Generate_SecondAttribute( Broker, att2, uid ) @ #p)) ∧
-          (GenerateKeyOr( u, Broker, uid, att1 ) @ #q)) ∧
-         (GenerateKeyAnd( u, Broker, uid, <att1, att2> ) @ #g)) ∧
-        (CreateAccessPolicy( <att1, att2>, uid ) @ #t)) ∧
-       (EncryptMessage_AND( Broker, m1, <att1, att2>, CT, uid ) @ #v)) ∧
-      (EncryptMessage_OR( Broker, m2, <att1, att2>, CT2, uid ) @ #y)) ∧
-     (DecryptMessage_AND( u, m1, <att1, att2> ) @ #x)) ∧
-    (DecryptMessage_OR( u, m2, att1 ) @ #z)"
+            (Generate_FirstAttribute( Broker, attr1, uid ) @ #k)) ∧
+           (Generate_SecondAttribute( Broker, attr2, uid ) @ #p)) ∧
+          (GenerateKeyOr( u, Broker, uid, attr1 ) @ #q)) ∧
+         (GenerateKeyAnd( u, Broker, uid, <attr1, attr2> ) @ #g)) ∧
+        (CreateAccessPolicy( <attr1, attr2>, uid ) @ #t)) ∧
+       (EncryptMessage_AND( Broker, m1, <attr1, attr2>, CT, uid ) @ #v)) ∧
+      (EncryptMessage_OR( Broker, m2, <attr1, attr2>, CT2, uid ) @ #y)) ∧
+     (DecryptMessage_AND( u, m1, <attr1, attr2> ) @ #x)) ∧
+    (DecryptMessage_OR( u, m2, attr1 ) @ #z)"
 /*
 guarded formula characterizing all satisfying traces:
-"∃ Broker m1 m2 att1 att2 CT CT2 u uid #i #j #k #p #q #g #t #v #y
+"∃ Broker m1 m2 attr1 attr2 CT CT2 u uid #i #j #k #p #q #g #t #v #y
    #x #z.
   (Broker_Setup( Broker ) @ #i) ∧
   (RevealMSK( Broker ) @ #j) ∧
-  (Generate_FirstAttribute( Broker, att1, uid ) @ #k) ∧
-  (Generate_SecondAttribute( Broker, att2, uid ) @ #p) ∧
-  (GenerateKeyOr( u, Broker, uid, att1 ) @ #q) ∧
-  (GenerateKeyAnd( u, Broker, uid, <att1, att2> ) @ #g) ∧
-  (CreateAccessPolicy( <att1, att2>, uid ) @ #t) ∧
-  (EncryptMessage_AND( Broker, m1, <att1, att2>, CT, uid ) @ #v) ∧
-  (EncryptMessage_OR( Broker, m2, <att1, att2>, CT2, uid ) @ #y) ∧
-  (DecryptMessage_AND( u, m1, <att1, att2> ) @ #x) ∧
-  (DecryptMessage_OR( u, m2, att1 ) @ #z)"
+  (Generate_FirstAttribute( Broker, attr1, uid ) @ #k) ∧
+  (Generate_SecondAttribute( Broker, attr2, uid ) @ #p) ∧
+  (GenerateKeyOr( u, Broker, uid, attr1 ) @ #q) ∧
+  (GenerateKeyAnd( u, Broker, uid, <attr1, attr2> ) @ #g) ∧
+  (CreateAccessPolicy( <attr1, attr2>, uid ) @ #t) ∧
+  (EncryptMessage_AND( Broker, m1, <attr1, attr2>, CT, uid ) @ #v) ∧
+  (EncryptMessage_OR( Broker, m2, <attr1, attr2>, CT2, uid ) @ #y) ∧
+  (DecryptMessage_AND( u, m1, <attr1, attr2> ) @ #x) ∧
+  (DecryptMessage_OR( u, m2, attr1 ) @ #z)"
 */
 simplify
 solve( !Broker_MasterSecretKey( $Broker, MSK ) ▶₀ #j )
@@ -859,21 +1350,22 @@ qed
 
 lemma executable_encrypt_message_multi:
   exists-trace
-  "∃ Broker m1 m2 att1 att2 CT uid #i.
-    EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att2>,
-                         <AND, AND>, CT, uid
+  "∃ Broker m1 m2 attr1 attr2 CT uid #i.
+    EncryptMessageMulti( Broker, <m1, m2>,
+                         <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT, uid
     ) @ #i"
 /*
 guarded formula characterizing all satisfying traces:
-"∃ Broker m1 m2 att1 att2 CT uid #i.
-  (EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att2>,
-                        <AND, AND>, CT, uid
+"∃ Broker m1 m2 attr1 attr2 CT uid #i.
+  (EncryptMessageMulti( Broker, <m1, m2>,
+                        <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT, uid
    ) @ #i)"
 */
 simplify
 solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
   case system_setup
-  solve( !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid ) ▶₃ #i )
+  solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+         ) ▶₃ #i )
     case create_access_policy
     SOLVED // trace found
   qed
@@ -881,9 +1373,9 @@ qed
 
 lemma executable_decrypt_message_multi:
   exists-trace
-  "∃ Broker m1 m2 key att1 att2 CT u uid #i #j #p.
+  "∃ Broker m1 m2 key attr1 attr2 CT u uid #i #j #p.
     ((((EncryptMessageMulti( Broker, <m1, m2>,
-                             <<att1, att2>, att1, att2>, <AND, AND>, CT, uid
+                             <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT, uid
         ) @ #i) ∧
        (SecretKeyAND( key, uid ) @ #j)) ∧
       (DecryptMessageMulti( u ) @ #p)) ∧
@@ -891,9 +1383,9 @@ lemma executable_decrypt_message_multi:
     (Decrypt( m2 ) @ #p)"
 /*
 guarded formula characterizing all satisfying traces:
-"∃ Broker m1 m2 key att1 att2 CT u uid #i #j #p.
-  (EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att2>,
-                        <AND, AND>, CT, uid
+"∃ Broker m1 m2 key attr1 attr2 CT u uid #i #j #p.
+  (EncryptMessageMulti( Broker, <m1, m2>,
+                        <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT, uid
    ) @ #i) ∧
   (SecretKeyAND( key, uid ) @ #j) ∧
   (DecryptMessageMulti( u ) @ #p) ∧
@@ -903,7 +1395,8 @@ guarded formula characterizing all satisfying traces:
 simplify
 solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
   case system_setup
-  solve( !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid ) ▶₃ #i )
+  solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+         ) ▶₃ #i )
     case create_access_policy
     solve( !Broker_MasterPublicKey( $Broker.1, MPK ) ▶₀ #j )
       case system_setup
@@ -911,36 +1404,34 @@ solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
         case system_setup
         solve( !User( $U, ~uid ) ▶₂ #j )
           case user_registration
-          solve( !FirstAttribute( $Broker.1, ~attr1, ~uid ) ▶₃ #j )
+          solve( !FirstAttribute( $Broker.1, ~attr1.1, ~uid ) ▶₃ #j )
             case generate_attributes
-            solve( !SecondAttribute( $Broker.1, ~attr2, ~uid ) ▶₄ #j )
+            solve( !SecondAttribute( $Broker.1, ~attr2.1, ~uid ) ▶₄ #j )
               case generate_attributes
-              solve( DecryptMessageMulti( u ) @ #p )
-                case decrypt_message_multi_satisfy_all
-                solve( !Broker_MasterPublicKey( $Broker.2, MPK ) ▶₁ #p )
-                  case system_setup
-                  solve( !User_AccessKey_AND( $U.1, ~uid.1, <~attr1.1, ~attr2.1>,
-                                              keygen(<'g'^~beta1.2, 'g'^~beta2.2, 'g'^~beta3.2, 
-                                                      em('g', 'g')^~alpha.2>,
-                                                     x, <~att1.1, ~att2.1>, ~uid.1)
-                         ) ▶₂ #p )
-                    case generate_key_and
-                    solve( !AccessPolicy( ~att1.1, ~att2.1, <~att1.1, ~att2.1>, ~uid.1
-                           ) ▶₃ #p )
-                      case create_access_policy
-                      solve( Decrypt( ~m1 ) @ #p )
-                        case decrypt_message_multi_satisfy_all_case_1
-                        solve( Decrypt( ~m2 ) @ #p )
-                          case decrypt_message_multi_satisfy_all
-                          solve( !KU( encryptMulti(<'g'^~beta1.2, 'g'^~beta2.2, 
-                                                    'g'^~beta3.2, em('g', 'g')^~alpha.2>,
-                                                   <~m1, ~m2>,
-                                                   <<~att1.1, ~att2.1>, ~att1.1, ~att2.1>,
-                                                   <AND, AND>, ~uid.1)
-                                 ) @ #vk )
-                            case encrypt_message_multi
-                            SOLVED // trace found
-                          qed
+              solve( !Broker_MasterPublicKey( $Broker.2, MPK ) ▶₁ #p )
+                case system_setup
+                solve( !User_AccessKey_AND( $U.1, ~uid.1, <~attr1.2, ~attr2.2>,
+                                            keygen(<'g'^~beta1.2, 'g'^~beta2.2, 'g'^~beta3.2, 
+                                                    em('g', 'g')^~alpha.2>,
+                                                   x, <~attr1.2, ~attr2.2>, ~uid.1)
+                       ) ▶₂ #p )
+                  case generate_key_and
+                  solve( !AccessPolicy( ~attr1.2, ~attr2.2, <~attr1.2, ~attr2.2>,
+                                        ~uid.1
+                         ) ▶₃ #p )
+                    case create_access_policy
+                    solve( Decrypt( ~m1 ) @ #p )
+                      case decrypt_message_multi_satisfy_all_case_1
+                      solve( Decrypt( ~m2 ) @ #p )
+                        case decrypt_message_multi_satisfy_all
+                        solve( !KU( encryptMulti(<'g'^~beta1.2, 'g'^~beta2.2, 
+                                                  'g'^~beta3.2, em('g', 'g')^~alpha.2>,
+                                                 <~m1, ~m2>,
+                                                 <<~attr1.2, ~attr2.2>, ~attr1.2, ~attr2.2>,
+                                                 <AND, AND>, ~uid.1)
+                               ) @ #vk )
+                          case encrypt_message_multi
+                          SOLVED // trace found
                         qed
                       qed
                     qed
@@ -957,15 +1448,15 @@ qed
 
 lemma secret_message_and:
   all-traces
-  "∀ Broker uid CT m att1 att2 #i #j.
+  "∀ Broker uid CT m attr1 attr2 #i #j.
     ((Secret( m ) @ #i) ∧
-     (EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid ) @ #j)) ⇒
+     (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid ) @ #j)) ⇒
     ((¬(∃ #k. K( m ) @ #k)) ∨ (∃ #l. RevealMSK( Broker ) @ #l))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker uid CT m att1 att2 #i #j.
+"∃ Broker uid CT m attr1 attr2 #i #j.
   (Secret( m ) @ #i) ∧
-  (EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid ) @ #j)
+  (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid ) @ #j)
  ∧
   (∃ #k. (K( m ) @ #k)) ∧ (∀ #l. (RevealMSK( Broker ) @ #l) ⇒ ⊥)"
 */
@@ -990,15 +1481,15 @@ qed
 
 lemma secret_message_or:
   all-traces
-  "∀ Broker uid CT m att1 att2 #i #j.
+  "∀ Broker uid CT m attr1 attr2 #i #j.
     ((Secret( m ) @ #i) ∧
-     (EncryptMessage_OR( Broker, m, <att1, att2>, CT, uid ) @ #j)) ⇒
+     (EncryptMessage_OR( Broker, m, <attr1, attr2>, CT, uid ) @ #j)) ⇒
     ((¬(∃ #k. K( m ) @ #k)) ∨ (∃ #l. RevealMSK( Broker ) @ #l))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker uid CT m att1 att2 #i #j.
+"∃ Broker uid CT m attr1 attr2 #i #j.
   (Secret( m ) @ #i) ∧
-  (EncryptMessage_OR( Broker, m, <att1, att2>, CT, uid ) @ #j)
+  (EncryptMessage_OR( Broker, m, <attr1, attr2>, CT, uid ) @ #j)
  ∧
   (∃ #k. (K( m ) @ #k)) ∧ (∀ #l. (RevealMSK( Broker ) @ #l) ⇒ ⊥)"
 */
@@ -1140,10 +1631,55 @@ solve( Secret( uid ) @ #i )
     qed
   qed
 next
+  case encrypt_message_multi_andor_case_1
+  solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
+    case system_setup
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #i )
+      case create_access_policy
+      solve( !KU( ~m1 ) @ #vk )
+        case encrypt_message_multi_andor_case_1
+        by solve( !KU( ~uid ) @ #vk.15 )
+      next
+        case encrypt_message_multi_andor_case_2
+        by solve( !KU( ~uid ) @ #vk.15 )
+      next
+        case encrypt_message_multi_andor_case_3
+        by solve( !KU( ~uid ) @ #vk.5 )
+      qed
+    qed
+  qed
+next
+  case encrypt_message_multi_andor_case_2
+  solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
+    case system_setup
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #i )
+      case create_access_policy
+      solve( !KU( ~m2 ) @ #vk )
+        case encrypt_message_multi_andor_case_1
+        by solve( !KU( ~attr1 ) @ #vk.4 )
+      next
+        case encrypt_message_multi_andor_case_2
+        by solve( !KU( ~attr2 ) @ #vk.4 )
+      next
+        case encrypt_message_multi_andor_case_3
+        by solve( !KU( ~uid ) @ #vk.15 )
+      next
+        case encrypt_message_multi_andor_case_4
+        by solve( !KU( ~uid ) @ #vk.15 )
+      next
+        case encrypt_message_multi_andor_case_5
+        by solve( !KU( ~uid ) @ #vk.5 )
+      qed
+    qed
+  qed
+next
   case encrypt_message_multi_case_1
   solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
     case system_setup
-    solve( !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid ) ▶₃ #i )
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #i )
       case create_access_policy
       solve( !KU( ~m1 ) @ #vk )
         case encrypt_message_multi_case_1
@@ -1161,7 +1697,8 @@ next
   case encrypt_message_multi_case_2
   solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
     case system_setup
-    solve( !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid ) ▶₃ #i )
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #i )
       case create_access_policy
       solve( !KU( ~m2 ) @ #vk )
         case encrypt_message_multi_case_1
@@ -1171,6 +1708,50 @@ next
         by solve( !KU( ~uid ) @ #vk.15 )
       next
         case encrypt_message_multi_case_3
+        by solve( !KU( ~uid ) @ #vk.5 )
+      qed
+    qed
+  qed
+next
+  case encrypt_message_multi_orand_case_1
+  solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
+    case system_setup
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #i )
+      case create_access_policy
+      solve( !KU( ~m1 ) @ #vk )
+        case encrypt_message_multi_orand_case_1
+        by solve( !KU( ~attr1 ) @ #vk.4 )
+      next
+        case encrypt_message_multi_orand_case_2
+        by solve( !KU( ~attr2 ) @ #vk.4 )
+      next
+        case encrypt_message_multi_orand_case_3
+        by solve( !KU( ~uid ) @ #vk.15 )
+      next
+        case encrypt_message_multi_orand_case_4
+        by solve( !KU( ~uid ) @ #vk.15 )
+      next
+        case encrypt_message_multi_orand_case_5
+        by solve( !KU( ~uid ) @ #vk.5 )
+      qed
+    qed
+  qed
+next
+  case encrypt_message_multi_orand_case_2
+  solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #i )
+    case system_setup
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #i )
+      case create_access_policy
+      solve( !KU( ~m2 ) @ #vk )
+        case encrypt_message_multi_orand_case_1
+        by solve( !KU( ~uid ) @ #vk.15 )
+      next
+        case encrypt_message_multi_orand_case_2
+        by solve( !KU( ~uid ) @ #vk.15 )
+      next
+        case encrypt_message_multi_orand_case_3
         by solve( !KU( ~uid ) @ #vk.5 )
       qed
     qed
@@ -1201,44 +1782,72 @@ qed
 
 lemma secret_message_multi:
   all-traces
-  "∀ Broker uid m1 m2 CT att1 att2 #i #j.
+  "∀ Broker uid m1 m2 CT attr1 attr2 #i #j.
     (((Secret( m1 ) @ #i) ∧ (Secret( m2 ) @ #i)) ∧
-     (EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att2>,
-                           <AND, AND>, CT, uid
+     (EncryptMessageMulti( Broker, <m1, m2>,
+                           <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT, uid
       ) @ #j)) ⇒
-    (((¬(∃ #k. K( m1 ) @ #k)) ∨ (¬(∃ #k. K( m2 ) @ #k))) ∨
-     (∃ Broker.1 #l. RevealMSK( Broker.1 ) @ #l))"
+    (((¬(∃ #k1. K( m1 ) @ #k1)) ∧ (¬(∃ #k2. K( m2 ) @ #k2))) ∨
+     (∃ Broker2 #l. RevealMSK( Broker2 ) @ #l))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker uid m1 m2 CT att1 att2 #i #j.
+"∃ Broker uid m1 m2 CT attr1 attr2 #i #j.
   (Secret( m1 ) @ #i) ∧
   (Secret( m2 ) @ #i) ∧
-  (EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att2>,
-                        <AND, AND>, CT, uid
+  (EncryptMessageMulti( Broker, <m1, m2>,
+                        <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT, uid
    ) @ #j)
  ∧
-  (∃ #k. (K( m1 ) @ #k)) ∧
-  (∃ #k. (K( m2 ) @ #k)) ∧
-  (∀ Broker.1 #l. (RevealMSK( Broker.1 ) @ #l) ⇒ ⊥)"
+  (((∃ #k1. (K( m1 ) @ #k1)) ∨ (∃ #k2. (K( m2 ) @ #k2)))) ∧
+  (∀ Broker2 #l. (RevealMSK( Broker2 ) @ #l) ⇒ ⊥)"
 */
 simplify
-solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #j )
-  case system_setup
-  solve( !AccessPolicy( ~att1, ~att2, <~att1, ~att2>, ~uid ) ▶₃ #j )
-    case create_access_policy
-    solve( Secret( ~m1 ) @ #i )
-      case encrypt_message_multi
-      solve( Secret( ~m2 ) @ #i )
+solve( (∃ #k1. (K( ~m1 ) @ #k1))  ∥ (∃ #k2. (K( ~m2 ) @ #k2)) )
+  case case_1
+  solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #j )
+    case system_setup
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #j )
+      case create_access_policy
+      solve( Secret( ~m1 ) @ #i )
         case encrypt_message_multi
-        solve( !KU( ~m1 ) @ #vk )
-          case encrypt_message_multi_case_1
-          by solve( !KU( ~uid ) @ #vk.16 )
-        next
-          case encrypt_message_multi_case_2
-          by solve( !KU( ~uid ) @ #vk.16 )
-        next
-          case encrypt_message_multi_case_3
-          by solve( !KU( ~uid ) @ #vk.6 )
+        solve( Secret( ~m2 ) @ #i )
+          case encrypt_message_multi
+          solve( !KU( ~m1 ) @ #vk )
+            case encrypt_message_multi_case_1
+            by solve( !KU( ~uid ) @ #vk.15 )
+          next
+            case encrypt_message_multi_case_2
+            by solve( !KU( ~uid ) @ #vk.15 )
+          next
+            case encrypt_message_multi_case_3
+            by solve( !KU( ~uid ) @ #vk.5 )
+          qed
+        qed
+      qed
+    qed
+  qed
+next
+  case case_2
+  solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #j )
+    case system_setup
+    solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+           ) ▶₃ #j )
+      case create_access_policy
+      solve( Secret( ~m1 ) @ #i )
+        case encrypt_message_multi
+        solve( Secret( ~m2 ) @ #i )
+          case encrypt_message_multi
+          solve( !KU( ~m2 ) @ #vk )
+            case encrypt_message_multi_case_1
+            by solve( !KU( ~uid ) @ #vk.15 )
+          next
+            case encrypt_message_multi_case_2
+            by solve( !KU( ~uid ) @ #vk.15 )
+          next
+            case encrypt_message_multi_case_3
+            by solve( !KU( ~uid ) @ #vk.5 )
+          qed
         qed
       qed
     qed
@@ -1247,27 +1856,28 @@ qed
 
 lemma collusion_resistance:
   all-traces
-  "∀ Broker m u1 uid1 CT1 u2 uid2 att1 att2 #i #j #k #l.
-    ((((((CreateAccessPolicy( <att1, att2>, uid1 ) @ #i) ∧
-         (EncryptMessage_AND( Broker, m, <att1, att2>, CT1, uid1 ) @ #j)) ∧
-        (GenerateKeyOr( u1, Broker, uid1, att1 ) @ #k)) ∧
-       (GenerateKeyOr( u2, Broker, uid2, att2 ) @ #l)) ∧
-      (¬(∃ #p. GenerateKeyOr( u1, Broker, uid1, att2 ) @ #p))) ∧
-     (¬(∃ #q. GenerateKeyOr( u2, Broker, uid2, att1 ) @ #q))) ⇒
-    (¬((∃ #g. DecryptMessage_OR( u1, m, att1 ) @ #g) ∨
-       (∃ #q. DecryptMessage_OR( u2, m, att2 ) @ #q)))"
+  "∀ Broker m u1 uid1 CT1 u2 uid2 attr1 attr2 #i #j #k #l.
+    ((((((CreateAccessPolicy( <attr1, attr2>, uid1 ) @ #i) ∧
+         (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT1, uid1
+          ) @ #j)) ∧
+        (GenerateKeyOr( u1, Broker, uid1, attr1 ) @ #k)) ∧
+       (GenerateKeyOr( u2, Broker, uid2, attr2 ) @ #l)) ∧
+      (¬(∃ #p. GenerateKeyOr( u1, Broker, uid1, attr2 ) @ #p))) ∧
+     (¬(∃ #q. GenerateKeyOr( u2, Broker, uid2, attr1 ) @ #q))) ⇒
+    (¬((∃ #g. DecryptMessage_OR( u1, m, attr1 ) @ #g) ∨
+       (∃ #q. DecryptMessage_OR( u2, m, attr2 ) @ #q)))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m u1 uid1 CT1 u2 uid2 att1 att2 #i #j #k #l.
-  (CreateAccessPolicy( <att1, att2>, uid1 ) @ #i) ∧
-  (EncryptMessage_AND( Broker, m, <att1, att2>, CT1, uid1 ) @ #j) ∧
-  (GenerateKeyOr( u1, Broker, uid1, att1 ) @ #k) ∧
-  (GenerateKeyOr( u2, Broker, uid2, att2 ) @ #l)
+"∃ Broker m u1 uid1 CT1 u2 uid2 attr1 attr2 #i #j #k #l.
+  (CreateAccessPolicy( <attr1, attr2>, uid1 ) @ #i) ∧
+  (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT1, uid1 ) @ #j) ∧
+  (GenerateKeyOr( u1, Broker, uid1, attr1 ) @ #k) ∧
+  (GenerateKeyOr( u2, Broker, uid2, attr2 ) @ #l)
  ∧
-  (∀ #p. (GenerateKeyOr( u1, Broker, uid1, att2 ) @ #p) ⇒ ⊥) ∧
-  (∀ #q. (GenerateKeyOr( u2, Broker, uid2, att1 ) @ #q) ⇒ ⊥) ∧
-  (((∃ #g. (DecryptMessage_OR( u1, m, att1 ) @ #g)) ∨
-    (∃ #q. (DecryptMessage_OR( u2, m, att2 ) @ #q))))"
+  (∀ #p. (GenerateKeyOr( u1, Broker, uid1, attr2 ) @ #p) ⇒ ⊥) ∧
+  (∀ #q. (GenerateKeyOr( u2, Broker, uid2, attr1 ) @ #q) ⇒ ⊥) ∧
+  (((∃ #g. (DecryptMessage_OR( u1, m, attr1 ) @ #g)) ∨
+    (∃ #q. (DecryptMessage_OR( u2, m, attr2 ) @ #q))))"
 */
 simplify
 solve( (∃ #g. (DecryptMessage_OR( $U.1, ~msg, ~attr1 ) @ #g))  ∥
@@ -1355,19 +1965,19 @@ qed
 
 lemma only_decrypt_with_right_attributes_and:
   all-traces
-  "∀ Broker m u uid CT att1 att2 #i #j.
-    ((EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid ) @ #i) ∧
-     (DecryptMessage_AND( u, m, <att1, att2> ) @ #j)) ⇒
+  "∀ Broker m u uid CT attr1 attr2 #i #j.
+    ((EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid ) @ #i) ∧
+     (DecryptMessage_AND( u, m, <attr1, attr2> ) @ #j)) ⇒
     (∃ uid.1 #k.
-      GenerateKeyAnd( u, Broker, uid.1, <att1, att2> ) @ #k)"
+      GenerateKeyAnd( u, Broker, uid.1, <attr1, attr2> ) @ #k)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m u uid CT att1 att2 #i #j.
-  (EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid ) @ #i) ∧
-  (DecryptMessage_AND( u, m, <att1, att2> ) @ #j)
+"∃ Broker m u uid CT attr1 attr2 #i #j.
+  (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid ) @ #i) ∧
+  (DecryptMessage_AND( u, m, <attr1, attr2> ) @ #j)
  ∧
   ∀ uid.1 #k.
-   (GenerateKeyAnd( u, Broker, uid.1, <att1, att2> ) @ #k) ⇒ ⊥"
+   (GenerateKeyAnd( u, Broker, uid.1, <attr1, attr2> ) @ #k) ⇒ ⊥"
 */
 simplify
 solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₀ #i )
@@ -1411,21 +2021,22 @@ qed
 
 lemma only_decrypt_with_right_attributes_or:
   all-traces
-  "∀ Broker m u uid CT att1 att2 #i #j #p.
-    (((EncryptMessage_OR( Broker, m, <att1, att2>, CT, uid ) @ #i) ∧
-      (DecryptMessage_OR( u, m, att1 ) @ #j)) ∧
-     (DecryptMessage_OR( u, m, att2 ) @ #p)) ⇒
-    ((∃ uid.1 #k. GenerateKeyOr( u, Broker, uid.1, att1 ) @ #k) ∧
-     (∃ uid.1 #l. GenerateKeyOr( u, Broker, uid.1, att2 ) @ #l))"
+  "∀ Broker m u uid CT attr1 attr2 #i #j #p.
+    (((EncryptMessage_OR( Broker, m, <attr1, attr2>, CT, uid ) @ #i) ∧
+      (DecryptMessage_OR( u, m, attr1 ) @ #j)) ∧
+     (DecryptMessage_OR( u, m, attr2 ) @ #p)) ⇒
+    ((∃ uid.1 #k. GenerateKeyOr( u, Broker, uid.1, attr1 ) @ #k) ∧
+     (∃ uid.1 #l. GenerateKeyOr( u, Broker, uid.1, attr2 ) @ #l))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m u uid CT att1 att2 #i #j #p.
-  (EncryptMessage_OR( Broker, m, <att1, att2>, CT, uid ) @ #i) ∧
-  (DecryptMessage_OR( u, m, att1 ) @ #j) ∧
-  (DecryptMessage_OR( u, m, att2 ) @ #p)
+"∃ Broker m u uid CT attr1 attr2 #i #j #p.
+  (EncryptMessage_OR( Broker, m, <attr1, attr2>, CT, uid ) @ #i) ∧
+  (DecryptMessage_OR( u, m, attr1 ) @ #j) ∧
+  (DecryptMessage_OR( u, m, attr2 ) @ #p)
  ∧
-  ((∀ uid.1 #k. (GenerateKeyOr( u, Broker, uid.1, att1 ) @ #k) ⇒ ⊥) ∨
-   (∀ uid.1 #l. (GenerateKeyOr( u, Broker, uid.1, att2 ) @ #l) ⇒ ⊥))"
+  ((∀ uid.1 #k.
+     (GenerateKeyOr( u, Broker, uid.1, attr1 ) @ #k) ⇒ ⊥) ∨
+   (∀ uid.1 #l. (GenerateKeyOr( u, Broker, uid.1, attr2 ) @ #l) ⇒ ⊥))"
 */
 simplify
 solve( (∀ uid #k.
@@ -1495,17 +2106,19 @@ qed
 
 lemma decrypt_with_encrypted_message_and:
   all-traces
-  "∀ m u att1 att2 #i.
-    (DecryptMessage_AND( u, m, <att1, att2> ) @ #i) ⇒
+  "∀ m u attr1 attr2 #i.
+    (DecryptMessage_AND( u, m, <attr1, attr2> ) @ #i) ⇒
     (∃ Broker uid CT #k.
-      EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid ) @ #k)"
+      EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid ) @ #k)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ m u att1 att2 #i.
-  (DecryptMessage_AND( u, m, <att1, att2> ) @ #i)
+"∃ m u attr1 attr2 #i.
+  (DecryptMessage_AND( u, m, <attr1, attr2> ) @ #i)
  ∧
   ∀ Broker uid CT #k.
-   (EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid ) @ #k) ⇒ ⊥"
+   (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid ) @ #k)
+  ⇒
+   ⊥"
 */
 simplify
 solve( !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>,
@@ -1528,6 +2141,30 @@ solve( !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>,
           case encrypt_message_and
           by solve( !KU( ~uid ) @ #vk.6 )
         next
+          case encrypt_message_multi_andor_case_1
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_andor_case_2
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_andor_case_3
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_andor_case_4
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_andor_case_5
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_andor_case_6
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_andor_case_7
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_andor_case_8
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
           case encrypt_message_multi_case_1
           by solve( !KU( ~uid ) @ #vk.7 )
         next
@@ -1544,6 +2181,30 @@ solve( !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>,
           by solve( !KU( ~uid ) @ #vk.6 )
         next
           case encrypt_message_multi_case_6
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_orand_case_1
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_orand_case_2
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_orand_case_3
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_orand_case_4
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_orand_case_5
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_orand_case_6
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_orand_case_7
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_orand_case_8
           by solve( !KU( ~uid ) @ #vk.6 )
         next
           case encrypt_message_or_case_1
@@ -2168,17 +2829,17 @@ qed
 
 lemma decrypt_with_encrypted_message_or:
   all-traces
-  "∀ m u att1 #i.
-    (DecryptMessage_OR( u, m, att1 ) @ #i) ⇒
-    (∃ Broker uid CT att2 #k.
-      EncryptMessage_OR( Broker, m, <att1, att2>, CT, uid ) @ #k)"
+  "∀ m u attr1 #i.
+    (DecryptMessage_OR( u, m, attr1 ) @ #i) ⇒
+    (∃ Broker uid CT attr2 #k.
+      EncryptMessage_OR( Broker, m, <attr1, attr2>, CT, uid ) @ #k)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ m u att1 #i.
-  (DecryptMessage_OR( u, m, att1 ) @ #i)
+"∃ m u attr1 #i.
+  (DecryptMessage_OR( u, m, attr1 ) @ #i)
  ∧
-  ∀ Broker uid CT att2 #k.
-   (EncryptMessage_OR( Broker, m, <att1, att2>, CT, uid ) @ #k) ⇒ ⊥"
+  ∀ Broker uid CT attr2 #k.
+   (EncryptMessage_OR( Broker, m, <attr1, attr2>, CT, uid ) @ #k) ⇒ ⊥"
 */
 simplify
 solve( !User_AccessKey_OR( $U, ~uid, ~attr1,
@@ -2201,6 +2862,30 @@ solve( !User_AccessKey_OR( $U, ~uid, ~attr1,
           case encrypt_message_and
           by solve( !KU( ~uid ) @ #vk.6 )
         next
+          case encrypt_message_multi_andor_case_1
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_andor_case_2
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_andor_case_3
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_andor_case_4
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_andor_case_5
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_andor_case_6
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_andor_case_7
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_andor_case_8
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
           case encrypt_message_multi_case_1
           by solve( !KU( ~uid ) @ #vk.7 )
         next
@@ -2217,6 +2902,30 @@ solve( !User_AccessKey_OR( $U, ~uid, ~attr1,
           by solve( !KU( ~uid ) @ #vk.6 )
         next
           case encrypt_message_multi_case_6
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_orand_case_1
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_orand_case_2
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_orand_case_3
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_orand_case_4
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_orand_case_5
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_orand_case_6
+          by solve( !KU( ~uid ) @ #vk.7 )
+        next
+          case encrypt_message_multi_orand_case_7
+          by solve( !KU( ~uid ) @ #vk.6 )
+        next
+          case encrypt_message_multi_orand_case_8
           by solve( !KU( ~uid ) @ #vk.6 )
         next
           case encrypt_message_or_case_1
@@ -2841,15 +3550,15 @@ qed
 
 lemma consistency_check:
   all-traces
-  "∀ Broker m u uid CT att1 att2 #i #j.
-    ((EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid ) @ #i) ∧
-     (DecryptMessage_OR( u, m, att1 ) @ #j)) ⇒
+  "∀ Broker m u uid CT attr1 attr2 #i #j.
+    ((EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid ) @ #i) ∧
+     (DecryptMessage_OR( u, m, attr1 ) @ #j)) ⇒
     (⊥)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m u uid CT att1 att2 #i #j.
-  (EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid ) @ #i) ∧
-  (DecryptMessage_OR( u, m, att1 ) @ #j)"
+"∃ Broker m u uid CT attr1 attr2 #i #j.
+  (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid ) @ #i) ∧
+  (DecryptMessage_OR( u, m, attr1 ) @ #j)"
 */
 simplify
 solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₀ #i )
@@ -2890,17 +3599,17 @@ qed
 
 lemma no_decryption_without_key:
   all-traces
-  "∀ m u att1 att2 #i.
-    (DecryptMessage_AND( u, m, <att1, att2> ) @ #i) ⇒
+  "∀ m u attr1 attr2 #i.
+    (DecryptMessage_AND( u, m, <attr1, attr2> ) @ #i) ⇒
     (∃ Broker uid #j.
-      GenerateKeyAnd( u, Broker, uid, <att1, att2> ) @ #j)"
+      GenerateKeyAnd( u, Broker, uid, <attr1, attr2> ) @ #j)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ m u att1 att2 #i.
-  (DecryptMessage_AND( u, m, <att1, att2> ) @ #i)
+"∃ m u attr1 attr2 #i.
+  (DecryptMessage_AND( u, m, <attr1, attr2> ) @ #i)
  ∧
   ∀ Broker uid #j.
-   (GenerateKeyAnd( u, Broker, uid, <att1, att2> ) @ #j) ⇒ ⊥"
+   (GenerateKeyAnd( u, Broker, uid, <attr1, attr2> ) @ #j) ⇒ ⊥"
 */
 simplify
 solve( !User_AccessKey_AND( $U, ~uid, <~attr1, ~attr2>,
@@ -2912,19 +3621,20 @@ qed
 
 lemma only_correct_user_can_decrypt:
   all-traces
-  "∀ Broker m u2 uid1 uid2 att1 att2 CT #i #j.
-    (((EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid1 ) @ #i) ∧
-      (GenerateKeyAnd( u2, Broker, uid2, <att1, att2> ) @ #j)) ∧
+  "∀ Broker m u2 uid1 uid2 attr1 attr2 CT #i #j.
+    (((EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid1
+       ) @ #i) ∧
+      (GenerateKeyAnd( u2, Broker, uid2, <attr1, attr2> ) @ #j)) ∧
      (¬(uid1 = uid2))) ⇒
-    (¬(∃ #k. DecryptMessage_AND( u2, m, <att1, att2> ) @ #k))"
+    (¬(∃ #k. DecryptMessage_AND( u2, m, <attr1, attr2> ) @ #k))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m u2 uid1 uid2 att1 att2 CT #i #j.
-  (EncryptMessage_AND( Broker, m, <att1, att2>, CT, uid1 ) @ #i) ∧
-  (GenerateKeyAnd( u2, Broker, uid2, <att1, att2> ) @ #j)
+"∃ Broker m u2 uid1 uid2 attr1 attr2 CT #i #j.
+  (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT, uid1 ) @ #i) ∧
+  (GenerateKeyAnd( u2, Broker, uid2, <attr1, attr2> ) @ #j)
  ∧
   (¬(uid1 = uid2)) ∧
-  (∃ #k. (DecryptMessage_AND( u2, m, <att1, att2> ) @ #k))"
+  (∃ #k. (DecryptMessage_AND( u2, m, <attr1, attr2> ) @ #k))"
 */
 simplify
 solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₀ #i )
@@ -2953,18 +3663,19 @@ qed
 
 lemma only_correct_user_can_decrypt_or:
   all-traces
-  "∀ Broker m u2 uid1 uid2 att1 att2 CT #i #j.
-    (((EncryptMessage_OR( Broker, m, <att1, att2>, CT, uid1 ) @ #i) ∧
-      (GenerateKeyOr( u2, Broker, uid2, att1 ) @ #j)) ∧
+  "∀ Broker m u2 uid1 uid2 attr1 attr2 CT #i #j.
+    (((EncryptMessage_OR( Broker, m, <attr1, attr2>, CT, uid1 ) @ #i) ∧
+      (GenerateKeyOr( u2, Broker, uid2, attr1 ) @ #j)) ∧
      (¬(uid1 = uid2))) ⇒
-    (¬(∃ #k. DecryptMessage_OR( u2, m, att1 ) @ #k))"
+    (¬(∃ #k. DecryptMessage_OR( u2, m, attr1 ) @ #k))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m u2 uid1 uid2 att1 att2 CT #i #j.
-  (EncryptMessage_OR( Broker, m, <att1, att2>, CT, uid1 ) @ #i) ∧
-  (GenerateKeyOr( u2, Broker, uid2, att1 ) @ #j)
+"∃ Broker m u2 uid1 uid2 attr1 attr2 CT #i #j.
+  (EncryptMessage_OR( Broker, m, <attr1, attr2>, CT, uid1 ) @ #i) ∧
+  (GenerateKeyOr( u2, Broker, uid2, attr1 ) @ #j)
  ∧
-  (¬(uid1 = uid2)) ∧ (∃ #k. (DecryptMessage_OR( u2, m, att1 ) @ #k))"
+  (¬(uid1 = uid2)) ∧
+  (∃ #k. (DecryptMessage_OR( u2, m, attr1 ) @ #k))"
 */
 simplify
 solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₀ #i )
@@ -2991,34 +3702,11 @@ solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₀ #i )
   qed
 qed
 
-lemma multi_message_decryption:
-  all-traces
-  "∀ Broker m1 m2 key att1 att2 att3 CT uid #i #j.
-    ((EncryptMessageMulti( Broker, <m1, m2>,
-                           <<att1, att2>, att1, att3>, <OR, AND>, CT, uid
-      ) @ #i) ∧
-     (SecretKeyAND( key, uid ) @ #j)) ⇒
-    ((∃ u #k. (DecryptMessageMulti( u ) @ #k) ∧ (Decrypt( m1 ) @ #k)) ∧
-     (¬(∃ #l. Decrypt( m2 ) @ #l)))"
-/*
-guarded formula characterizing all counter-examples:
-"∃ Broker m1 m2 key att1 att2 att3 CT uid #i #j.
-  (EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att3>,
-                        <OR, AND>, CT, uid
-   ) @ #i) ∧
-  (SecretKeyAND( key, uid ) @ #j)
- ∧
-  ((∀ u #k.
-     (DecryptMessageMulti( u ) @ #k) ∧ (Decrypt( m1 ) @ #k) ⇒ ⊥) ∨
-   (∃ #l. (Decrypt( m2 ) @ #l)))"
-*/
-by simplify
-
 lemma consistency_multi_message_output:
   all-traces
-  "∀ Broker m1 m2 decrypted1 decrypted2 att1 att2 CT u uid #i #j.
+  "∀ Broker m1 m2 decrypted1 decrypted2 attr1 attr2 CT u uid #i #j.
     (((((EncryptMessageMulti( Broker, <m1, m2>,
-                              <<att1, att2>, att1, att2>, <AND, AND>, CT, uid
+                              <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT, uid
          ) @ #i) ∧
         (DecryptMessageMulti( u ) @ #j)) ∧
        (Decrypt( decrypted1 ) @ #j)) ∧
@@ -3027,9 +3715,9 @@ lemma consistency_multi_message_output:
     ((m1 = decrypted1) ∧ (m2 = decrypted2))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m1 m2 decrypted1 decrypted2 att1 att2 CT u uid #i #j.
-  (EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att2>,
-                        <AND, AND>, CT, uid
+"∃ Broker m1 m2 decrypted1 decrypted2 attr1 attr2 CT u uid #i #j.
+  (EncryptMessageMulti( Broker, <m1, m2>,
+                        <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT, uid
    ) @ #i) ∧
   (DecryptMessageMulti( u ) @ #j) ∧
   (Decrypt( decrypted1 ) @ #j) ∧
@@ -3041,17 +3729,182 @@ guarded formula characterizing all counter-examples:
 simplify
 by contradiction /* from formulas */
 
+lemma multi_message_decryption_partial_orand:
+  all-traces
+  "∀ Broker m1 m2 attr1 attr2 uid user1 CT #enc #k #dec.
+    ((((EncryptMessageMulti_ORAND( Broker, <m1, m2>,
+                                   <<attr1, attr2>, attr1, attr2>, <OR, AND>, CT, uid
+        ) @ #enc) ∧
+       (HasORKey( user1 ) @ #k)) ∧
+      (DecryptMessageMulti_First( user1 ) @ #dec)) ∧
+     (¬(∃ #k2. HasANDKey( user1 ) @ #k2))) ⇒
+    (((((∃ #d1. (Decrypt( m1 ) @ #d1) ∧ (#dec < #d1)) ∧
+        (¬(∃ #d2. Decrypt( m2 ) @ #d2))) ∧
+       (¬(∃ #b. DecryptMessageMulti_Both( user1 ) @ #b))) ∧
+      (#k < #enc)) ∧
+     (#enc < #dec))"
+/*
+guarded formula characterizing all counter-examples:
+"∃ Broker m1 m2 attr1 attr2 uid user1 CT #enc #k #dec.
+  (EncryptMessageMulti_ORAND( Broker, <m1, m2>,
+                              <<attr1, attr2>, attr1, attr2>, <OR, AND>, CT, uid
+   ) @ #enc) ∧
+  (HasORKey( user1 ) @ #k) ∧
+  (DecryptMessageMulti_First( user1 ) @ #dec)
+ ∧
+  (∀ #k2. (HasANDKey( user1 ) @ #k2) ⇒ ⊥) ∧
+  (((∀ #d1. (Decrypt( m1 ) @ #d1) ⇒ ¬(#dec < #d1)) ∨
+    (∃ #d2. (Decrypt( m2 ) @ #d2)) ∨
+    (∃ #b. (DecryptMessageMulti_Both( user1 ) @ #b)) ∨
+    (¬(#k < #enc)) ∨
+    (¬(#enc < #dec))))"
+*/
+by simplify
+
+lemma multi_message_decryption_full_orand:
+  all-traces
+  "∀ Broker m1 m2 attr1 attr2 uid CT #enc user1 #k #dec.
+    (((EncryptMessageMulti_ORAND( Broker, <m1, m2>,
+                                  <<attr1, attr2>, attr1, attr2>, <OR, AND>, CT, uid
+       ) @ #enc) ∧
+      (DecryptMessageMulti_Both( user1 ) @ #dec)) ∧
+     (HasANDKey( user1 ) @ #k)) ⇒
+    (∃ #d1 #d2.
+      (((Decrypt( m1 ) @ #d1) ∧ (Decrypt( m2 ) @ #d2)) ∧ (#k < #d1)) ∧
+      (#k < #d2))"
+/*
+guarded formula characterizing all counter-examples:
+"∃ Broker m1 m2 attr1 attr2 uid CT #enc user1 #k #dec.
+  (EncryptMessageMulti_ORAND( Broker, <m1, m2>,
+                              <<attr1, attr2>, attr1, attr2>, <OR, AND>, CT, uid
+   ) @ #enc) ∧
+  (DecryptMessageMulti_Both( user1 ) @ #dec) ∧
+  (HasANDKey( user1 ) @ #k)
+ ∧
+  ∀ #d1 #d2.
+   (Decrypt( m1 ) @ #d1) ∧ (Decrypt( m2 ) @ #d2)
+  ⇒
+   ((¬(#k < #d1)) ∨ (¬(#k < #d2)))"
+*/
+simplify
+solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #enc )
+  case system_setup
+  solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+         ) ▶₃ #enc )
+    case create_access_policy
+    solve( !Broker_MasterPublicKey( $Broker.1, MPK ) ▶₀ #k )
+      case system_setup
+      solve( !Broker_MasterSecretKey( $Broker.1, MSK ) ▶₁ #k )
+        case system_setup
+        solve( !User( $U, ~uid.1 ) ▶₂ #k )
+          case user_registration
+          solve( !FirstAttribute( $Broker.1, ~attr1.1, ~uid.1 ) ▶₃ #k )
+            case generate_attributes
+            solve( !SecondAttribute( $Broker.1, ~attr2.1, ~uid.1 ) ▶₄ #k )
+              case generate_attributes
+              by solve( DecryptMessageMulti_Both( ~uid.1 ) @ #dec )
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma multi_message_decryption_full_andor:
+  all-traces
+  "∀ Broker m1 m2 attr1 attr2 uid CT #enc user1 #k #dec.
+    (((EncryptMessageMulti_ANDOR( Broker, <m1, m2>,
+                                  <<attr1, attr2>, attr1, attr2>, <AND, OR>, CT, uid
+       ) @ #enc) ∧
+      (DecryptMessageMulti_Both( user1 ) @ #dec)) ∧
+     (HasANDKey( user1 ) @ #k)) ⇒
+    (∃ #d1 #d2.
+      (((Decrypt( m1 ) @ #d1) ∧ (Decrypt( m2 ) @ #d2)) ∧ (#k < #d1)) ∧
+      (#k < #d2))"
+/*
+guarded formula characterizing all counter-examples:
+"∃ Broker m1 m2 attr1 attr2 uid CT #enc user1 #k #dec.
+  (EncryptMessageMulti_ANDOR( Broker, <m1, m2>,
+                              <<attr1, attr2>, attr1, attr2>, <AND, OR>, CT, uid
+   ) @ #enc) ∧
+  (DecryptMessageMulti_Both( user1 ) @ #dec) ∧
+  (HasANDKey( user1 ) @ #k)
+ ∧
+  ∀ #d1 #d2.
+   (Decrypt( m1 ) @ #d1) ∧ (Decrypt( m2 ) @ #d2)
+  ⇒
+   ((¬(#k < #d1)) ∨ (¬(#k < #d2)))"
+*/
+simplify
+solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₂ #enc )
+  case system_setup
+  solve( !AccessPolicy( ~attr1, ~attr2, <~attr1, ~attr2>, ~uid
+         ) ▶₃ #enc )
+    case create_access_policy
+    solve( !Broker_MasterPublicKey( $Broker.1, MPK ) ▶₀ #k )
+      case system_setup
+      solve( !Broker_MasterSecretKey( $Broker.1, MSK ) ▶₁ #k )
+        case system_setup
+        solve( !User( $U, ~uid.1 ) ▶₂ #k )
+          case user_registration
+          solve( !FirstAttribute( $Broker.1, ~attr1.1, ~uid.1 ) ▶₃ #k )
+            case generate_attributes
+            solve( !SecondAttribute( $Broker.1, ~attr2.1, ~uid.1 ) ▶₄ #k )
+              case generate_attributes
+              by solve( DecryptMessageMulti_Both( ~uid.1 ) @ #dec )
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma multi_message_decryption_partial_andor:
+  all-traces
+  "∀ Broker m1 m2 attr1 attr2 uid user2 CT #enc #k #dec.
+    (((EncryptMessageMulti_ANDOR( Broker, <m1, m2>,
+                                  <<attr1, attr2>, attr1, attr2>, <AND, OR>, CT, uid
+       ) @ #enc) ∧
+      (HasORKey( user2 ) @ #k)) ∧
+     (DecryptMessageMulti_Second( user2 ) @ #dec)) ⇒
+    (((∃ user2.1 #d1 #d2.
+        ((DecryptMessageMulti_Second( user2.1 ) @ #d1) ∧
+         (Decrypt( m2 ) @ #d2)) ∧
+        (#d1 < #d2)) ∧
+      (¬(∃ #d3. Decrypt( m1 ) @ #d3))) ∧
+     (¬(∃ userBoth #b. DecryptMessageMulti_Both( userBoth ) @ #b)))"
+/*
+guarded formula characterizing all counter-examples:
+"∃ Broker m1 m2 attr1 attr2 uid user2 CT #enc #k #dec.
+  (EncryptMessageMulti_ANDOR( Broker, <m1, m2>,
+                              <<attr1, attr2>, attr1, attr2>, <AND, OR>, CT, uid
+   ) @ #enc) ∧
+  (HasORKey( user2 ) @ #k) ∧
+  (DecryptMessageMulti_Second( user2 ) @ #dec)
+ ∧
+  ((∀ user2.1 #d1 #d2.
+     (DecryptMessageMulti_Second( user2.1 ) @ #d1) ∧
+     (Decrypt( m2 ) @ #d2)
+    ⇒
+     ¬(#d1 < #d2)) ∨
+   (∃ #d3. (Decrypt( m1 ) @ #d3)) ∨
+   (∃ userBoth #b. (DecryptMessageMulti_Both( userBoth ) @ #b)))"
+*/
+by simplify
+
 lemma unique_key_for_and:
   all-traces
-  "∀ Broker u1 u2 uid att1 att2 #i #j.
-    ((GenerateKeyAnd( u1, Broker, uid, <att1, att2> ) @ #i) ∧
-     (GenerateKeyAnd( u2, Broker, uid, <att1, att2> ) @ #j)) ⇒
+  "∀ Broker u1 u2 uid attr1 attr2 #i #j.
+    ((GenerateKeyAnd( u1, Broker, uid, <attr1, attr2> ) @ #i) ∧
+     (GenerateKeyAnd( u2, Broker, uid, <attr1, attr2> ) @ #j)) ⇒
     (u1 = u2)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker u1 u2 uid att1 att2 #i #j.
-  (GenerateKeyAnd( u1, Broker, uid, <att1, att2> ) @ #i) ∧
-  (GenerateKeyAnd( u2, Broker, uid, <att1, att2> ) @ #j)
+"∃ Broker u1 u2 uid attr1 attr2 #i #j.
+  (GenerateKeyAnd( u1, Broker, uid, <attr1, attr2> ) @ #i) ∧
+  (GenerateKeyAnd( u2, Broker, uid, <attr1, attr2> ) @ #j)
  ∧
   ¬(u1 = u2)"
 */
@@ -3101,17 +3954,17 @@ by contradiction /* from formulas */
 
 lemma consistent_key_generation_for_same_user:
   all-traces
-  "∀ u uid Broker att1 att2 key1 key2 #i #j.
-    ((((GenerateKeyAnd( u, Broker, uid, <att1, att2> ) @ #i) ∧
-       (GenerateKeyAnd( u, Broker, uid, <att1, att2> ) @ #j)) ∧
+  "∀ u uid Broker attr1 attr2 key1 key2 #i #j.
+    ((((GenerateKeyAnd( u, Broker, uid, <attr1, attr2> ) @ #i) ∧
+       (GenerateKeyAnd( u, Broker, uid, <attr1, attr2> ) @ #j)) ∧
       (SecretKeyAND( key1, uid ) @ #i)) ∧
      (SecretKeyAND( key2, uid ) @ #j)) ⇒
     (key1 = key2)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ u uid Broker att1 att2 key1 key2 #i #j.
-  (GenerateKeyAnd( u, Broker, uid, <att1, att2> ) @ #i) ∧
-  (GenerateKeyAnd( u, Broker, uid, <att1, att2> ) @ #j) ∧
+"∃ u uid Broker attr1 attr2 key1 key2 #i #j.
+  (GenerateKeyAnd( u, Broker, uid, <attr1, attr2> ) @ #i) ∧
+  (GenerateKeyAnd( u, Broker, uid, <attr1, attr2> ) @ #j) ∧
   (SecretKeyAND( key1, uid ) @ #i) ∧
   (SecretKeyAND( key2, uid ) @ #j)
  ∧
@@ -3143,17 +3996,17 @@ qed
 
 lemma consistent_key_generation_for_same_user_or:
   all-traces
-  "∀ u uid Broker att1 key1 key2 #i #j.
-    ((((GenerateKeyOr( u, Broker, uid, att1 ) @ #i) ∧
-       (GenerateKeyOr( u, Broker, uid, att1 ) @ #j)) ∧
+  "∀ u uid Broker attr1 key1 key2 #i #j.
+    ((((GenerateKeyOr( u, Broker, uid, attr1 ) @ #i) ∧
+       (GenerateKeyOr( u, Broker, uid, attr1 ) @ #j)) ∧
       (SecretKeyOR( key1, uid ) @ #i)) ∧
      (SecretKeyOR( key2, uid ) @ #j)) ⇒
     (key1 = key2)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ u uid Broker att1 key1 key2 #i #j.
-  (GenerateKeyOr( u, Broker, uid, att1 ) @ #i) ∧
-  (GenerateKeyOr( u, Broker, uid, att1 ) @ #j) ∧
+"∃ u uid Broker attr1 key1 key2 #i #j.
+  (GenerateKeyOr( u, Broker, uid, attr1 ) @ #i) ∧
+  (GenerateKeyOr( u, Broker, uid, attr1 ) @ #j) ∧
   (SecretKeyOR( key1, uid ) @ #i) ∧
   (SecretKeyOR( key2, uid ) @ #j)
  ∧
@@ -3182,18 +4035,18 @@ qed
 
 lemma different_users_generate_different_keys:
   all-traces
-  "∀ u1 u2 Broker uid1 uid2 att1 att2 key1 key2 #i #j.
-    (((((GenerateKeyAnd( u1, Broker, uid1, <att1, att2> ) @ #i) ∧
-        (GenerateKeyAnd( u2, Broker, uid2, <att1, att2> ) @ #j)) ∧
+  "∀ u1 u2 Broker uid1 uid2 attr1 attr2 key1 key2 #i #j.
+    (((((GenerateKeyAnd( u1, Broker, uid1, <attr1, attr2> ) @ #i) ∧
+        (GenerateKeyAnd( u2, Broker, uid2, <attr1, attr2> ) @ #j)) ∧
        (SecretKeyAND( key1, uid1 ) @ #i)) ∧
       (SecretKeyAND( key2, uid2 ) @ #j)) ∧
      (¬(u1 = u2))) ⇒
     (¬(key1 = key2))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ u1 u2 Broker uid1 uid2 att1 att2 key1 key2 #i #j.
-  (GenerateKeyAnd( u1, Broker, uid1, <att1, att2> ) @ #i) ∧
-  (GenerateKeyAnd( u2, Broker, uid2, <att1, att2> ) @ #j) ∧
+"∃ u1 u2 Broker uid1 uid2 attr1 attr2 key1 key2 #i #j.
+  (GenerateKeyAnd( u1, Broker, uid1, <attr1, attr2> ) @ #i) ∧
+  (GenerateKeyAnd( u2, Broker, uid2, <attr1, attr2> ) @ #j) ∧
   (SecretKeyAND( key1, uid1 ) @ #i) ∧
   (SecretKeyAND( key2, uid2 ) @ #j)
  ∧
@@ -3232,16 +4085,18 @@ qed
 
 lemma encryption_different_for_different_users:
   all-traces
-  "∀ Broker m att1 att2 CT1 CT2 uid1 uid2 #i #j.
-    (((EncryptMessage_AND( Broker, m, <att1, att2>, CT1, uid1 ) @ #i) ∧
-      (EncryptMessage_AND( Broker, m, <att1, att2>, CT2, uid2 ) @ #j)) ∧
+  "∀ Broker m attr1 attr2 CT1 CT2 uid1 uid2 #i #j.
+    (((EncryptMessage_AND( Broker, m, <attr1, attr2>, CT1, uid1
+       ) @ #i) ∧
+      (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT2, uid2
+       ) @ #j)) ∧
      (¬(uid1 = uid2))) ⇒
     (¬(CT1 = CT2))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m att1 att2 CT1 CT2 uid1 uid2 #i #j.
-  (EncryptMessage_AND( Broker, m, <att1, att2>, CT1, uid1 ) @ #i) ∧
-  (EncryptMessage_AND( Broker, m, <att1, att2>, CT2, uid2 ) @ #j)
+"∃ Broker m attr1 attr2 CT1 CT2 uid1 uid2 #i #j.
+  (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT1, uid1 ) @ #i) ∧
+  (EncryptMessage_AND( Broker, m, <attr1, attr2>, CT2, uid2 ) @ #j)
  ∧
   (¬(uid1 = uid2)) ∧ (CT1 = CT2)"
 */
@@ -3250,16 +4105,17 @@ by contradiction /* from formulas */
 
 lemma encryption_different_for_different_users_or:
   all-traces
-  "∀ Broker m att1 att2 CT1 CT2 uid1 uid2 #i #j.
-    (((EncryptMessage_OR( Broker, m, <att1, att2>, CT1, uid1 ) @ #i) ∧
-      (EncryptMessage_OR( Broker, m, <att1, att2>, CT2, uid2 ) @ #j)) ∧
+  "∀ Broker m attr1 attr2 CT1 CT2 uid1 uid2 #i #j.
+    (((EncryptMessage_OR( Broker, m, <attr1, attr2>, CT1, uid1
+       ) @ #i) ∧
+      (EncryptMessage_OR( Broker, m, <attr1, attr2>, CT2, uid2 ) @ #j)) ∧
      (¬(uid1 = uid2))) ⇒
     (¬(CT1 = CT2))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m att1 att2 CT1 CT2 uid1 uid2 #i #j.
-  (EncryptMessage_OR( Broker, m, <att1, att2>, CT1, uid1 ) @ #i) ∧
-  (EncryptMessage_OR( Broker, m, <att1, att2>, CT2, uid2 ) @ #j)
+"∃ Broker m attr1 attr2 CT1 CT2 uid1 uid2 #i #j.
+  (EncryptMessage_OR( Broker, m, <attr1, attr2>, CT1, uid1 ) @ #i) ∧
+  (EncryptMessage_OR( Broker, m, <attr1, attr2>, CT2, uid2 ) @ #j)
  ∧
   (¬(uid1 = uid2)) ∧ (CT1 = CT2)"
 */
@@ -3268,17 +4124,18 @@ by contradiction /* from formulas */
 
 lemma non_malleability:
   all-traces
-  "∀ Broker m1 m2 u uid att1 att2 CT1 CT2 #i #j.
-    (((EncryptMessage_AND( Broker, m1, <att1, att2>, CT1, uid ) @ #i) ∧
-      (DecryptMessage_AND( u, m2, <att1, att2> ) @ #j)) ∧
-     (Equality( CT1, CT2 ) @ #i)) ⇒
+  "∀ Broker m1 m2 u uid attr1 attr2 CT1 CT2 #i #j #k.
+    (((EncryptMessage_AND( Broker, m1, <attr1, attr2>, CT1, uid
+       ) @ #i) ∧
+      (DecryptMessage_AND( u, m2, <attr1, attr2> ) @ #j)) ∧
+     (Equality( CT1, CT2 ) @ #k)) ⇒
     (m1 = m2)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m1 m2 u uid att1 att2 CT1 CT2 #i #j.
-  (EncryptMessage_AND( Broker, m1, <att1, att2>, CT1, uid ) @ #i) ∧
-  (DecryptMessage_AND( u, m2, <att1, att2> ) @ #j) ∧
-  (Equality( CT1, CT2 ) @ #i)
+"∃ Broker m1 m2 u uid attr1 attr2 CT1 CT2 #i #j #k.
+  (EncryptMessage_AND( Broker, m1, <attr1, attr2>, CT1, uid ) @ #i) ∧
+  (DecryptMessage_AND( u, m2, <attr1, attr2> ) @ #j) ∧
+  (Equality( CT1, CT2 ) @ #k)
  ∧
   ¬(m1 = m2)"
 */
@@ -3307,7 +4164,7 @@ solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₀ #i )
                                         ~msg, <~attr1, ~attr2>, AND, ~uid),
                                 encrypt(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, em('g', 'g')^~alpha>,
                                         ~msg, <~attr1, ~attr2>, AND, ~uid)
-                      ) @ #i )
+                      ) @ #k )
           qed
         qed
       qed
@@ -3317,17 +4174,18 @@ qed
 
 lemma non_malleability_or:
   all-traces
-  "∀ Broker m1 m2 u uid att1 att2 CT1 CT2 #i #j.
-    (((EncryptMessage_OR( Broker, m1, <att1, att2>, CT1, uid ) @ #i) ∧
-      (DecryptMessage_OR( u, m2, att1 ) @ #j)) ∧
-     (Equality( CT1, CT2 ) @ #i)) ⇒
+  "∀ Broker m1 m2 u uid attr1 attr2 CT1 CT2 #i #j #k.
+    (((EncryptMessage_OR( Broker, m1, <attr1, attr2>, CT1, uid
+       ) @ #i) ∧
+      (DecryptMessage_OR( u, m2, attr1 ) @ #j)) ∧
+     (Equality( CT1, CT2 ) @ #k)) ⇒
     (m1 = m2)"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m1 m2 u uid att1 att2 CT1 CT2 #i #j.
-  (EncryptMessage_OR( Broker, m1, <att1, att2>, CT1, uid ) @ #i) ∧
-  (DecryptMessage_OR( u, m2, att1 ) @ #j) ∧
-  (Equality( CT1, CT2 ) @ #i)
+"∃ Broker m1 m2 u uid attr1 attr2 CT1 CT2 #i #j #k.
+  (EncryptMessage_OR( Broker, m1, <attr1, attr2>, CT1, uid ) @ #i) ∧
+  (DecryptMessage_OR( u, m2, attr1 ) @ #j) ∧
+  (Equality( CT1, CT2 ) @ #k)
  ∧
   ¬(m1 = m2)"
 */
@@ -3356,7 +4214,7 @@ solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₀ #i )
                                         ~msg, <~attr1, ~attr2>, OR, ~uid),
                                 encrypt(<'g'^~beta1, 'g'^~beta2, 'g'^~beta3, em('g', 'g')^~alpha>,
                                         ~msg, <~attr1, ~attr2>, OR, ~uid)
-                      ) @ #i )
+                      ) @ #k )
           qed
         qed
       qed
@@ -3364,24 +4222,42 @@ solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₀ #i )
   qed
 qed
 
-lemma no_attribute_collision:
+lemma no_attribute_collision_diff_key:
   all-traces
-  "∀ u uid1 uid2 Broker att1 att2 key1 key2 #i #j.
-    (((((GenerateKeyAnd( u, Broker, uid1, <att1, att2> ) @ #i) ∧
-        (GenerateKeyAnd( u, Broker, uid2, <att1, att2> ) @ #j)) ∧
+  "∀ u uid1 uid2 Broker attr1 attr2 key1 key2 #i #j.
+    (((((GenerateKeyAnd( u, Broker, uid1, <attr1, attr2> ) @ #i) ∧
+        (GenerateKeyAnd( u, Broker, uid2, <attr1, attr2> ) @ #j)) ∧
        (SecretKeyAND( key1, uid1 ) @ #i)) ∧
       (SecretKeyAND( key2, uid2 ) @ #j)) ∧
      (¬(uid1 = uid2))) ⇒
-    (¬(<att1, att2> = <att1, att2>))"
+    (¬(key1 = key2))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ u uid1 uid2 Broker att1 att2 key1 key2 #i #j.
-  (GenerateKeyAnd( u, Broker, uid1, <att1, att2> ) @ #i) ∧
-  (GenerateKeyAnd( u, Broker, uid2, <att1, att2> ) @ #j) ∧
+"∃ u uid1 uid2 Broker attr1 attr2 key1 key2 #i #j.
+  (GenerateKeyAnd( u, Broker, uid1, <attr1, attr2> ) @ #i) ∧
+  (GenerateKeyAnd( u, Broker, uid2, <attr1, attr2> ) @ #j) ∧
   (SecretKeyAND( key1, uid1 ) @ #i) ∧
   (SecretKeyAND( key2, uid2 ) @ #j)
  ∧
-  (¬(uid1 = uid2)) ∧ (<att1, att2> = <att1, att2>)"
+  (¬(uid1 = uid2)) ∧ (key1 = key2)"
+*/
+simplify
+by contradiction /* from formulas */
+
+lemma no_attribute_collision:
+  all-traces
+  "∀ u uid1 uid2 Broker attr1 attr2 #i #j.
+    (((GenerateKeyAnd( u, Broker, uid1, <attr1, attr2> ) @ #i) ∧
+      (GenerateKeyAnd( u, Broker, uid2, <attr1, attr2> ) @ #j)) ∧
+     (¬(uid1 = uid2))) ⇒
+    (⊥)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ u uid1 uid2 Broker attr1 attr2 #i #j.
+  (GenerateKeyAnd( u, Broker, uid1, <attr1, attr2> ) @ #i) ∧
+  (GenerateKeyAnd( u, Broker, uid2, <attr1, attr2> ) @ #j)
+ ∧
+  ¬(uid1 = uid2)"
 */
 simplify
 solve( !Broker_MasterPublicKey( $Broker, MPK ) ▶₀ #i )
@@ -3415,23 +4291,23 @@ qed
 
 lemma unique_ciphertext_multi_users:
   all-traces
-  "∀ Broker m1 m2 att1 att2 CT1 CT2 uid1 uid2 #i #j.
+  "∀ Broker m1 m2 attr1 attr2 CT1 CT2 uid1 uid2 #i #j.
     (((EncryptMessageMulti( Broker, <m1, m2>,
-                            <<att1, att2>, att1, att2>, <AND, AND>, CT1, uid1
+                            <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT1, uid1
        ) @ #i) ∧
-      (EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att2>,
-                            <AND, AND>, CT2, uid2
+      (EncryptMessageMulti( Broker, <m1, m2>,
+                            <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT2, uid2
        ) @ #j)) ∧
      (¬(uid1 = uid2))) ⇒
     (¬(CT1 = CT2))"
 /*
 guarded formula characterizing all counter-examples:
-"∃ Broker m1 m2 att1 att2 CT1 CT2 uid1 uid2 #i #j.
-  (EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att2>,
-                        <AND, AND>, CT1, uid1
+"∃ Broker m1 m2 attr1 attr2 CT1 CT2 uid1 uid2 #i #j.
+  (EncryptMessageMulti( Broker, <m1, m2>,
+                        <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT1, uid1
    ) @ #i) ∧
-  (EncryptMessageMulti( Broker, <m1, m2>, <<att1, att2>, att1, att2>,
-                        <AND, AND>, CT2, uid2
+  (EncryptMessageMulti( Broker, <m1, m2>,
+                        <<attr1, attr2>, attr1, attr2>, <AND, AND>, CT2, uid2
    ) @ #j)
  ∧
   (¬(uid1 = uid2)) ∧ (CT1 = CT2)"
