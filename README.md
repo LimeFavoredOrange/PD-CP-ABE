@@ -476,19 +476,19 @@ To run the formal verification locally:
    Or if you want to use a GUI to show the proof step by step, you can run the following command instead.
    Which will run a local server on **http://127.0.0.1:3001**
    ```bash
-   tamarin-prover interactive PD_CP_ABE.spthy  
+   tamarin-prover interactive PD_CP_ABE.spthy  --derivcheck-timeout=20
    ```
 
 5. **Interpret the Results**
    The output will display verification success or failure for each lemma, indicating whether the properties hold.
    This is the summary output for the provided model.
    ```bash
-    ===========================================================================
+    ==============================================================================
     summary of summaries:
-
+    
     analyzed: PD_CP_ABE.spthy
     
-      processing time: 1988.70s
+      processing time: 1747.08s
       
       executable_system_setup (exists-trace): verified (2 steps)
       unique_system_setup (all-traces): verified (2 steps)
@@ -529,10 +529,10 @@ To run the formal verification locally:
       only_correct_user_can_decrypt (all-traces): verified (9 steps)
       only_correct_user_can_decrypt_or (all-traces): verified (9 steps)
       consistency_multi_message_output (all-traces): verified (2 steps)
-      multi_message_decryption_partial_orand (all-traces): falsified - found trace (5 steps)
-      multi_message_decryption_full_orand (all-traces): falsified - found trace (9 steps)
-      multi_message_decryption_partial_andor (all-traces): falsified - found trace (5 steps)
-      multi_message_decryption_full_andor (all-traces): falsified - found trace (9 steps)
+      multi_message_decryption_partial_orand (all-traces): verified (1 steps)
+      multi_message_decryption_full_orand (all-traces): verified (9 steps)
+      multi_message_decryption_full_andor (all-traces): verified (9 steps)
+      multi_message_decryption_partial_andor (all-traces): verified (1 steps)
       unique_key_for_and (all-traces): verified (10 steps)
       unique_user_registration (all-traces): verified (2 steps)
       consistent_key_generation_for_same_user (all-traces): verified (9 steps)
@@ -545,8 +545,8 @@ To run the formal verification locally:
       no_attribute_collision_diff_key (all-traces): verified (2 steps)
       no_attribute_collision (all-traces): verified (11 steps)
       unique_ciphertext_multi_users (all-traces): verified (2 steps)
-
-    ===========================================================================
+    
+    ==============================================================================
    ```
 
 
